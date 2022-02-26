@@ -10,5 +10,10 @@ return [
         'delete' => 'deleted successfully !',
         'login_success' => 'You Have Logged in Successfully',
         'logout_success' => 'You Have Logged Out Successfully !'
+    ],
+    'roles' => [
+        'user_role' => 'user',
+        'admin_role' => 'admin',
+        'officer_role' => 'officer'
     ]
 ];
