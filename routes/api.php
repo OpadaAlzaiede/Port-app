@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,4 +24,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    Route::get('/admin/notifications', [AdminController::class, 'getNotifications']);
 });

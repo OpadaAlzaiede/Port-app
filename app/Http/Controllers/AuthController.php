@@ -8,6 +8,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\RegisterRequest;
+use App\Notifications\NewUserRegisterationNotification;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 
@@ -33,6 +34,12 @@ class AuthController extends Controller
         $user = User::create($request->all());
         $user->password = Hash::make($user->password);
         $user->save();
+
+        $admin = User::whereHas('roles', function($query) {
+            $query->where('name', Config::get('constants.roles.admin_role'));
+        })->first();
+
+        $admin->notify(new NewUserRegisterationNotification($user));
 
         return $this->success([
             'user' => new UserResource($user),
