@@ -15,4 +15,9 @@ class PayloadType extends Model
     {
         return $this->hasMany(PayloadRequest::class);
     }
+
+    public function enterPortRequests()
+    {
+        // TODO
+    }
 }

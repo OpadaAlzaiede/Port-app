@@ -5,9 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Piers extends Model
+class Yard extends Model
 {
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function pier()
+    {
+        return $this->belongsToMany(Pier::class, 'pier_yard')->withPivot(['distance']);
+    }
 }

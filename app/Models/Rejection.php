@@ -12,7 +12,7 @@ class Rejection extends Model
     protected $guarded = ['id'];
 
     const MORPH = [
-        1 => RejectedPayloadRequest::class
+        1 => PayloadRequest::class
     ];
 
     public function rejectable()

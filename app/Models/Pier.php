@@ -5,15 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TugBoat extends Model
+class Pier extends Model
 {
     use HasFactory;
 
     protected $guarded = ['id'];
 
-    public function shipTugboat()
+    public function enterPortPiers()
     {
         // TODO
-        return $this->hasOne();
+    }
+
+    public function yards()
+    {
+        return $this->belongsToMany(Yard::class, 'pier_yard')->withPivot(['distance']);
     }
 }
