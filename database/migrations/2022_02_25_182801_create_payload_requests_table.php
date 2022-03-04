@@ -23,7 +23,7 @@ class CreatePayloadRequestsTable extends Migration
             $table->unsignedBigInteger('process_id');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
-            $table->timestamp('deleted_at');
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

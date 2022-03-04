@@ -25,4 +25,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/admin/notifications', [AdminController::class, 'getNotifications']);
+
+    Route::resource('/payload-types',\App\Http\Controllers\PayloadTypeController::class);
 });
