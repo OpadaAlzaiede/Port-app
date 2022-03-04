@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Traits\JsonErrors;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class ForgetPasswordRequest extends FormRequest
 {
     use JsonErrors;
     /**
@@ -26,13 +26,7 @@ class RegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required',
-            'father_name' => 'required',
-            'last_name' => 'required',
-            'username' => 'required|unique:users,username',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required',
-            'password' => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/|confirmed'
+            'email' => 'required|exists:users,email'
         ];
     }
 }
