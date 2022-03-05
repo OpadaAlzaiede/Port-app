@@ -15,6 +15,6 @@ class PayloadRequestItem extends Model
 
     public function payloadRequest()
     {
-        return $this->belongsTo(PayloadRequestItem::class, 'payload_request_id);
+        return $this->belongsTo(PayloadRequest::class);
     }
 }
