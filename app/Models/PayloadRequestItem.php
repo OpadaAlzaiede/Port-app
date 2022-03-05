@@ -11,8 +11,10 @@ class PayloadRequestItem extends Model
 
     protected $guarded = ['id'];
 
+    protected $table = 'payload_request_items';
+
     public function payloadRequest()
     {
-        return $this->belongsTo(PayloadRequest::class);
+        return $this->belongsTo(PayloadRequestItem::class, 'payload_request_id);
     }
 }
