@@ -18,6 +18,6 @@ class PayloadType extends Model
 
     public function enterPortRequests()
     {
-        // TODO
+        return $this->hasMany(PortRequest::class);
     }
 }

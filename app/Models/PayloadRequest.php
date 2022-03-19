@@ -18,7 +18,7 @@ class PayloadRequest extends Model
 
     public function process()
     {
-        // TODO LATER
+        return $this->belongsTo(ProcessType::class);
     }
 
     public function user()
