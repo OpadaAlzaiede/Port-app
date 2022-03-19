@@ -13,7 +13,6 @@ class TugBoat extends Model
 
     public function shipTugboat()
     {
-        // TODO
-        return $this->hasOne();
+        return $this->hasOne(ShipTugboat::class);
     }
 }

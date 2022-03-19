@@ -13,7 +13,7 @@ class Pier extends Model
 
     public function enterPortPiers()
     {
-        // TODO
+        return $this->hasMany(PortPier::class);
     }
 
     public function yards()
