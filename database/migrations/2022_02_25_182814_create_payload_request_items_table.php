@@ -18,6 +18,7 @@ class CreatePayloadRequestItemsTable extends Migration
             $table->string('name');
             $table->double('amount');
             $table->unsignedBigInteger('payload_request_id');
+            $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });
     }
