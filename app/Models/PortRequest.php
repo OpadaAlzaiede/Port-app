@@ -25,4 +25,9 @@ class PortRequest extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function portRequestItems()
+    {
+        return $this->hasMany(PortRequestItem::class);
+    }
 }

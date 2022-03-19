@@ -6,6 +6,7 @@ use App\Http\Requests\StoreEnterPortRequestRequest;
 use App\Http\Requests\UpdateEnterPortRequestRequest;
 use App\Http\Resources\EnterPortRequestResource;
 use App\Models\PortRequest;
+use App\Models\PortRequestItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -49,10 +50,19 @@ class EnterPortRequestController extends Controller
         $data = $request->validated();
         $data['user_id'] = Auth::id();
         $enterPortRequest = PortRequest::create($data);
+        $enterPortRequestItems = $request->get('enter_port_request_items');
+        foreach ($enterPortRequestItems as $enterPortRequestItem) {
+            PortRequestItem::create([
+                'name' => $enterPortRequestItem['name'],
+                'amount' => $enterPortRequestItem['amount'],
+                'enter_port_request_id' => $enterPortRequest->id,
+            ]);
+        }
         return $this->resource($enterPortRequest->load([
             'processType',
             'payloadType',
-            'user'
+            'user',
+            'portRequestItems'
         ]));
     }
 
@@ -71,7 +81,8 @@ class EnterPortRequestController extends Controller
         return $this->resource($enterPortRequest->load([
             'processType',
             'payloadType',
-            'user'
+            'user',
+            'portRequestItems'
         ]));
     }
 
@@ -87,11 +98,26 @@ class EnterPortRequestController extends Controller
         if (!$enterPortRequest) {
             $this->error('401', 'NOT FOUND');
         }
+        if ($request->has('enter_port_request_items')) {
+            $enterPortRequestItems = $enterPortRequest->portRequestItems;
+            foreach ($enterPortRequestItems as $enterPortRequestItem) {
+                $enterPortRequestItem->delete();
+            }
+            $newEnterPortRequestItems = $request->get('enter_port_request_items');
+            foreach ($newEnterPortRequestItems as $newEnterPortRequestItem) {
+                PortRequestItem::create([
+                    'name' => $newEnterPortRequestItem['name'],
+                    'amount' => $newEnterPortRequestItem['amount'],
+                    'enter_port_request_id' => $enterPortRequest->id,
+                ]);
+            }
+        }
         $enterPortRequest->update($request->validated());
         return $this->resource($enterPortRequest->load([
             'processType',
             'payloadType',
-            'user'
+            'user',
+            'portRequestItems'
         ]));
     }
 
