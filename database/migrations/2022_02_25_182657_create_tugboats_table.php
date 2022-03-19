@@ -20,7 +20,7 @@ class CreateTugboatsTable extends Migration
             $table->dateTime('service_start_date');
             $table->tinyInteger('status');
             $table->timestamps();
-            $table->timestamp('deleted_at');
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

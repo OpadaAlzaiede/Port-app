@@ -26,7 +26,7 @@ class CreateEnterPortRequestsTable extends Migration
             $table->unsignedBigInteger('payload_type_id');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
-            $table->timestamp('deleted_at');
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

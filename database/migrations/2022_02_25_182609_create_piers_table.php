@@ -23,7 +23,7 @@ class CreatePiersTable extends Migration
             $table->string('function');
             $table->tinyInteger('status');
             $table->timestamps();
-            $table->timestamp('deleted_at');
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

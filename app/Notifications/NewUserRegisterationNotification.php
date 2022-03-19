@@ -48,6 +48,7 @@ class NewUserRegisterationNotification extends Notification
             'last_name' => $this->user->last_name,
             'username' => $this->user->username,
             'phone' => $this->user->phone,
+            'email' => $this->user->email
         ];
     }
 

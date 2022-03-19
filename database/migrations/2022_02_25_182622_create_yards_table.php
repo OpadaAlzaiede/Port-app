@@ -18,7 +18,7 @@ class CreateYardsTable extends Migration
             $table->double('size');
             $table->string('function');
             $table->timestamps();
-            $table->timestamp('deleted_at');
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 
