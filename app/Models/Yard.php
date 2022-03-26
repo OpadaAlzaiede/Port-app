@@ -11,7 +11,7 @@ class Yard extends Model
 
     protected $guarded = ['id'];
 
-    public function pier()
+    public function piers()
     {
         return $this->belongsToMany(Pier::class, 'pier_yard')->withPivot(['distance']);
     }
