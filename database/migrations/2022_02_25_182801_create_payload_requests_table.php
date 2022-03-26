@@ -19,8 +19,9 @@ class CreatePayloadRequestsTable extends Migration
             $table->string('shipping_policy_number');
             $table->string('ship_number');
             $table->tinyInteger('status');
+            $table->datetime('date');
             $table->unsignedBigInteger('payload_type_id');
-            $table->unsignedBigInteger('process_id');
+            $table->unsignedBigInteger('process_type_id');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
