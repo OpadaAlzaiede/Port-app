@@ -34,6 +34,9 @@ class UpdateEnterPortRequestRequest extends FormRequest
                 'shipping_policy_number' => 'string',
                 'process_type_id' => 'integer|exists:process_types,id',
                 'payload_type_id' => 'integer|exists:payload_types,id',
+                'enter_port_request_items' => 'array',
+                'enter_port_request_items.*.name' => 'required|string',
+                'enter_port_request_items.*.amount' => 'required|numeric',
             ];
     }
 }

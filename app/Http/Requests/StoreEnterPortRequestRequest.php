@@ -35,6 +35,9 @@ class StoreEnterPortRequestRequest extends FormRequest
                 'shipping_policy_number' => 'required|string',
                 'process_type_id' => 'required|integer|exists:process_types,id',
                 'payload_type_id' => 'required|integer|exists:payload_types,id',
+                'enter_port_request_items' => 'array|required',
+                'enter_port_request_items.*.name' => 'required|string',
+                'enter_port_request_items.*.amount' => 'required|numeric',
             ];
     }
 }
