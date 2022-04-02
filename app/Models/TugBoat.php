@@ -9,6 +9,8 @@ class TugBoat extends Model
 {
     use HasFactory;
 
+    protected $table = 'tugboats';
+
     protected $guarded = ['id'];
 
     public function shipTugboat()
