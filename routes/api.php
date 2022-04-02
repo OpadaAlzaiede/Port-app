@@ -7,6 +7,7 @@ use App\Http\Controllers\PayloadTypeController;
 use App\Http\Controllers\PierController;
 use App\Http\Controllers\TugboatController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\YardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,4 +38,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::resource('/piers', PierController::class);
     Route::resource('/tugboats', TugboatController::class);
+    Route::resource('/yards', YardController::class);
 });
