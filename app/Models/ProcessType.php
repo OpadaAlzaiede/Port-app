@@ -9,6 +9,8 @@ class ProcessType extends Model
 {
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     protected $table = 'process_types';
 
     public function enterPortRequest()

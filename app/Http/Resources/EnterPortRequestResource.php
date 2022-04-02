@@ -18,6 +18,7 @@ class EnterPortRequestResource extends JsonResource
     {
         return
             [
+                'id' => $this->id,
                 'ship_name' => $this->ship_name,
                 'ship_length' => $this->ship_length,
                 'ship_draft_length' => $this->ship_draft_length,

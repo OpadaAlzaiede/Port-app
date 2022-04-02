@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EnterPortRequestController;
 use App\Http\Controllers\PayloadRequestController;
 use App\Http\Controllers\PayloadTypeController;
 use App\Http\Controllers\PierController;
+use App\Http\Controllers\ProcessTypeController;
 use App\Http\Controllers\TugboatController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\YardController;
@@ -39,4 +41,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::resource('/piers', PierController::class);
     Route::resource('/tugboats', TugboatController::class);
     Route::resource('/yards', YardController::class);
+
+    Route::resource('/process-types', ProcessTypeController::class);
+    Route::resource('/enter-port-requests', EnterPortRequestController::class);
 });

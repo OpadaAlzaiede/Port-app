@@ -9,6 +9,8 @@ class PortRequest extends Model
 {
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     protected $table = 'enter_port_requests';
 
     public function processType()
@@ -28,6 +30,6 @@ class PortRequest extends Model
 
     public function portRequestItems()
     {
-        return $this->hasMany(PortRequestItem::class);
+        return $this->hasMany(PortRequestItem::class, 'enter_port_request_id', 'id');
     }
 }

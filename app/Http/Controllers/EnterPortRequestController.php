@@ -49,6 +49,7 @@ class EnterPortRequestController extends Controller
     {
         $data = $request->validated();
         $data['user_id'] = Auth::id();
+        $data['status'] = 0;
         $enterPortRequest = PortRequest::create($data);
         $enterPortRequestItems = $request->get('enter_port_request_items');
         foreach ($enterPortRequestItems as $enterPortRequestItem) {

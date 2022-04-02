@@ -9,6 +9,8 @@ class PortRequestItem extends Model
 {
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     protected $table = 'enter_port_request_items';
 
     public function PortRequest()
