@@ -3,7 +3,9 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PayloadRequestController;
+use App\Http\Controllers\PayloadTypeController;
 use App\Http\Controllers\PierController;
+use App\Http\Controllers\TugboatController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,9 +31,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/admin/notifications', [AdminController::class, 'getNotifications']);
 
-    Route::resource('/payload-types',\App\Http\Controllers\PayloadTypeController::class);
+    Route::resource('/payload-types', PayloadTypeController::class);
+
     Route::resource('payload-requests', PayloadRequestController::class);
-    Route::resource('/payload-types', \App\Http\Controllers\PayloadTypeController::class);
 
     Route::resource('/piers', PierController::class);
+    Route::resource('/tugboats', TugboatController::class);
 });
