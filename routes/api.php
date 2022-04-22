@@ -36,6 +36,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::resource('/payload-types', PayloadTypeController::class);
 
+    Route::post('/payload-requests/{id}/approve', [PayloadRequestController::class, 'approve']);
+    Route::post('/payload-requests/{id}/refuse', [PayloadRequestController::class, 'refuse']);
+    Route::post('/payload-requests/{id}/cancel', [PayloadRequestController::class, 'cancel']);
     Route::resource('payload-requests', PayloadRequestController::class);
 
     Route::resource('/piers', PierController::class);

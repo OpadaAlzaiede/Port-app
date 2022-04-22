@@ -145,7 +145,7 @@ class PayloadRequestController extends Controller
             return $this->error(404, Config::get('constants.errors.not_found'));
 
         if(!$this->checkIfCanMakeAction($payloadRequest))
-            return $this->error(401, 'unauthorized !');
+            return $this->error(401, Config::get('constants.errors.unauthorized'));
 
         $this->setRequest(PayloadRequest::class, $payloadRequest, Rejection::class);
         $this->approveRequest(Auth::user());
@@ -161,7 +161,7 @@ class PayloadRequestController extends Controller
             return $this->error(404, Config::get('constants.errors.not_found'));
 
         if(!$this->checkIfCanMakeAction($payloadRequest))
-            return $this->error(401, 'unauthorized !');
+            return $this->error(401, Config::get('constants.errors.unauthorized'));
 
         $data['reason'] = $request->reason;
         $data['date'] = Carbon::now();
@@ -184,7 +184,7 @@ class PayloadRequestController extends Controller
             return $this->error(404, Config::get('constants.errors.not_found'));
 
         if(!$this->checkIfCanMakeAction($payloadRequest))
-            return $this->error(401, 'unauthorized !');
+            return $this->error(401, Config::get('constants.errors.unauthorized'));
 
         $this->setRequest(PayloadRequest::class, $payloadRequest, Rejection::class);
 

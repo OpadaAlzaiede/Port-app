@@ -107,19 +107,19 @@ trait Request
 
     private function markAsForwardRequest() {
 
-        $this->requestObject->status = DataBaseConstants::getWaysArr()['FORWARD'];
+        $this->requestObject->way = DataBaseConstants::getWaysArr()['FORWARD'];
         $this->requestObject->save();
     }
 
     private function markAsBackwardRequest() {
 
-        $this->requestObject->status = DataBaseConstants::getWaysArr()['BACKWARD'];
+        $this->requestObject->way = DataBaseConstants::getWaysArr()['BACKWARD'];
         $this->requestObject->save();
     }
 
     private function markAsHoldingRequest() {
 
-        $this->requestObject->status = DataBaseConstants::getWaysArr()['HOLDING'];
+        $this->requestObject->way = DataBaseConstants::getWaysArr()['HOLDING'];
         $this->requestObject->save();
     }
 
