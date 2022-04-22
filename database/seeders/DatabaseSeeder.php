@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\PayloadType;
+use App\Models\ProcessType;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Config;
@@ -28,5 +30,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create(['username' => 'officer'])->assignRole($officerRole);
         User::factory()->create(['username' => 'admin'])->assignRole($adminRole);
+        PayloadType::factory(5)->create();
+        ProcessType::factory(5)->create();
     }
 }

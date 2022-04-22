@@ -21,12 +21,12 @@ class DataBaseConstants
     const IS_SERVED_YES = 1;
     const IS_SERVED_NO = 0;
 
-    public function getStatusesArr()
+    public static function getStatusesArr()
     {
         return self::STATUSES;
     }
 
-    public function getWaysArr()
+    public static function getWaysArr()
     {
         return self::WAYS;
     }

@@ -24,7 +24,8 @@ class PayloadRequestResource extends JsonResource
             'process_type' => $this->whenLoaded('processType'),
             'payload_type' => $this->whenLoaded('payloadType'),
             'user' => $this->whenLoaded('user'),
-            'items' => $this->whenLoaded('payloadRequestItems')
+            'items' => $this->whenLoaded('payloadRequestItems'),
+            'path' => $this->path
         ];
     }
 }

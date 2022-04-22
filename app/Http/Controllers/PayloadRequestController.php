@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\constants\DataBaseConstants;
 use App\Http\Requests\StorePayloadRequestRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -11,10 +12,12 @@ use Illuminate\Support\Facades\Config;
 use App\Http\Requests\UpdatePayloadRequestRequest;
 use App\Http\Resources\PayloadRequestResource;
 use App\Models\PayloadRequestItem;
+use App\Traits\Request as CustomRequest;
 use Illuminate\Support\Facades\Auth;
 
 class PayloadRequestController extends Controller
 {
+    use CustomRequest;
 
     public function __construct(Request $request)
     {
@@ -48,6 +51,7 @@ class PayloadRequestController extends Controller
         $payloadRequest->date = Carbon::now();
         $payloadRequest->user_id = Auth::id();
         $payloadRequest->status = 0;
+        $payloadRequest->way = DataBaseConstants::getWaysArr()['FORWARD'];
         $payloadRequest->save();
 
         foreach($request->items as $item) {
@@ -57,6 +61,8 @@ class PayloadRequestController extends Controller
                 'payload_request_id' => $payloadRequest->id
             ]);
         }
+
+        $payloadRequest->createPath();
 
         return $this->resource($payloadRequest->load([
             'processType',

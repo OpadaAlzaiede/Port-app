@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
+use App\constants\DataBaseConstants;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PayloadRequest extends Model
 {
@@ -29,5 +33,28 @@ class PayloadRequest extends Model
     public function payloadRequestItems()
     {
         return $this->hasMany(PayloadRequestItem::class);
+    }
+
+    public function path() {
+
+        return $this->belongsToMany(User::class)->withPivot('is_served');
+    }
+
+    public function refusals() {
+
+        return $this->morphMany(Rejection::class, 'rejectable');
+    }
+
+    public function createPath() {
+
+        $this->path()->attach([Auth::id() => [
+            'is_served' => DataBaseConstants::IS_SERVED_YES
+        ]]);
+
+        $officer = User::getUserByRoleName(Config::get('constants.roles.officer_role'));
+        
+        $this->path()->attach([$officer->id => [
+            'is_served' => DataBaseConstants::IS_SERVED_NO
+        ]]);
     }
 }

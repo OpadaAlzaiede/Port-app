@@ -36,4 +36,10 @@ class User extends Authenticatable implements Auditable
     {
         return $this->hasMany(PayloadRequest::class);
     }
+
+    public static function getUserByRoleName($role) {
+
+        return self::role($role)
+                    ->first();
+    }
 }

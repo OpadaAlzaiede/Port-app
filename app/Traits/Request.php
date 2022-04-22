@@ -3,6 +3,7 @@
 
 namespace App\Traits;
 
+use App\constants\DataBaseConstants;
 use Carbon\Carbon;
 use App\Traits\UnReadable;
 use Illuminate\Support\Facades\Auth;
@@ -94,31 +95,31 @@ trait Request
 
     private function markAsDoneRequest() {
 
-        $this->requestObject->status = $this->requestModel::getStatusesArray()['DONE'];
+        $this->requestObject->status = DataBaseConstants::getStatusesArr()['DONE'];
         $this->requestObject->save();
     }
 
     private function markAsCanceledRequest() {
 
-        $this->requestObject->status = $this->requestModel::getStatusesArray()['CANCELED'];
+        $this->requestObject->status = DataBaseConstants::getStatusesArr()['CANCELED'];
         $this->requestObject->save();
     }
 
     private function markAsForwardRequest() {
 
-        $this->requestObject->way = $this->requestModel::getWaysArray()['FORWARD'];
+        $this->requestObject->status = DataBaseConstants::getWaysArr()['FORWARD'];
         $this->requestObject->save();
     }
 
     private function markAsBackwardRequest() {
 
-        $this->requestObject->way = $this->requestModel::getWaysArray()['BACKWARD'];
+        $this->requestObject->status = DataBaseConstants::getWaysArr()['BACKWARD'];
         $this->requestObject->save();
     }
 
     private function markAsHoldingRequest() {
 
-        $this->requestObject->way = $this->requestModel::getWaysArray()['HOLDING'];
+        $this->requestObject->status = DataBaseConstants::getWaysArr()['HOLDING'];
         $this->requestObject->save();
     }
 
