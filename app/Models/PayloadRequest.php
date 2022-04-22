@@ -45,6 +45,11 @@ class PayloadRequest extends Model
         return $this->morphMany(Rejection::class, 'rejectable');
     }
 
+    public function isDone() {
+
+        return $this->status = DataBaseConstants::getStatusesArr()['DONE'];
+    }
+
     public function createPath() {
 
         $this->path()->attach([Auth::id() => [
@@ -52,7 +57,7 @@ class PayloadRequest extends Model
         ]]);
 
         $officer = User::getUserByRoleName(Config::get('constants.roles.officer_role'));
-        
+
         $this->path()->attach([$officer->id => [
             'is_served' => DataBaseConstants::IS_SERVED_NO
         ]]);
