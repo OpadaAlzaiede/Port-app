@@ -21,7 +21,7 @@ class CreateEnterPortRequestsTable extends Migration
             $table->double('payload_weight');
             $table->double('ship_weight');
             $table->string('shipping_policy_number');
-            $table->tinyInteger('status')->default(0);
+            $table->tinyInteger('status')->default(1);
             $table->unsignedBigInteger('process_type_id');
             $table->unsignedBigInteger('payload_type_id');
             $table->unsignedBigInteger('user_id');
