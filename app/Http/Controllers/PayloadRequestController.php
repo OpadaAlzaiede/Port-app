@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\PayloadRequest;
 use App\Models\PayloadRequestItem;
 use App\constants\DataBaseConstants;
+use App\Http\Requests\RefusePayloadRequestRequest;
 use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Support\Facades\Config;
@@ -21,7 +22,7 @@ class PayloadRequestController extends Controller
 {
     use CustomRequest;
 
-    private $includes = ['payloadRequestItems', 'processType', 'payloadType', 'user'];
+    private $includes = ['payloadRequestItems', 'processType', 'payloadType', 'user', 'refusals'];
 
     public function __construct(Request $request)
     {
@@ -111,8 +112,11 @@ class PayloadRequestController extends Controller
                 ]);
             }
         }
+        $this->setRequest(PayloadRequest::class, $payloadRequest, Rejection::class);
 
-        $payloadRequest->update($request->all());
+        $officer = User::getUserByRoleName(Config::get('constants.roles.officer_role'));
+
+        $this->reProcessRequest(Auth::user(), $officer, $request->all());
 
         return $this->resource($payloadRequest->load($this->includes));
     }
@@ -153,7 +157,7 @@ class PayloadRequestController extends Controller
         return $this->resource($payloadRequest->load($this->includes));
     }
 
-    public function refuse(Request $request, $id) {
+    public function refuse(RefusePayloadRequestRequest $request, $id) {
 
         $payloadRequest = PayloadRequest::find($id);
 
@@ -174,6 +178,8 @@ class PayloadRequestController extends Controller
         $user = User::find($payloadRequest->user_id);
 
         $this->refuseRequest(Auth::user(), $user, $data);
+
+        return $this->resource($payloadRequest->load($this->includes));
     } 
 
     public function cancel($id) {
@@ -189,6 +195,8 @@ class PayloadRequestController extends Controller
         $this->setRequest(PayloadRequest::class, $payloadRequest, Rejection::class);
 
         $this->cancelRequest(Auth::user());
+
+        return $this->resource($payloadRequest->load($this->includes));
     }
 
     private function checkIfCanMakeAction($payloadRequest) {

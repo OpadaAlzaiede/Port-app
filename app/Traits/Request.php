@@ -34,7 +34,6 @@ trait Request
             'is_served' => 0
         ]]);
 
-        $this->requestObject->level++;
         $this->requestObject->save();
 
         $this->setAsUnread($this->requestModel, $this->requestObject);
@@ -55,7 +54,6 @@ trait Request
 
         $this->markAsBackwardRequest();
 
-        $this->requestObject->level--;
         $this->requestObject->save();
 
         $this->setAsUnread($this->requestModel, $this->requestObject);
@@ -74,7 +72,6 @@ trait Request
         $nextUserRecord->pivot->save();
 
         $this->markAsForwardRequest();
-        $this->requestObject->level++;
         $this->requestObject->save();
 
         $this->setAsUnread($this->requestModel, $this->requestObject);
