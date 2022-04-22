@@ -47,4 +47,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::resource('/process-types', ProcessTypeController::class);
     Route::resource('/enter-port-requests', EnterPortRequestController::class);
+    Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
 });
