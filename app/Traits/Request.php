@@ -127,7 +127,7 @@ trait Request
         $this->refuseModel = $refuseModel;
     }
 
-    public function getRequestsDependingOnStatus($status, $relation, $includes, $filters, $compareColumn, $column, $isServed, $perPage, $page) {
+    public function getRequestsDependingOnStatus($status, $relation, $includes, $filters, $isServed, $perPage, $page) {
 
         $requests = $relation->where('is_served', $isServed);
 
@@ -135,7 +135,6 @@ trait Request
                             ->allowedIncludes($includes)
                             ->allowedFilters($filters)
                             ->where('status', $status)
-                            ->where($compareColumn, $column)
                             ->defaultSort('-id')
                             ->paginate($perPage, ['*'], 'page', $page);
     }

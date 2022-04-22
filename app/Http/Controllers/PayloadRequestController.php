@@ -208,4 +208,27 @@ class PayloadRequestController extends Controller
 
         return $userRecord->pivot->is_served === DataBaseConstants::IS_SERVED_NO;
     }
+
+    private function scopeRequests($status, $isServed) {
+
+        $requests =  $this->getRequestsDependingOnStatus(
+            $status,
+            Auth::user()->payloadRequests(),
+            $this->includes,
+            $this->filters,
+            $isServed,
+            $this->perPage,
+            $this->page
+        );
+
+        return $requests;
+    }
+
+    private function flushNotifications($requests, $status) {
+
+        if($requests)
+            foreach ($requests as $request) {
+                $this->setAsRead(Auth::id(), $request->id, $status, PayloadRequest::class);
+            }
+    }
 }

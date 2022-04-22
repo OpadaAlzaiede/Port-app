@@ -32,7 +32,7 @@ class User extends Authenticatable implements Auditable
         'remember_token',
     ];
 
-    public function payloadRequests()
+    public function ownedPayloadRequests()
     {
         return $this->hasMany(PayloadRequest::class);
     }
@@ -41,5 +41,10 @@ class User extends Authenticatable implements Auditable
 
         return self::role($role)
                     ->first();
+    }
+
+    public function payloadRequests() {
+
+        return $this->belongsToMany(PayloadRequest::class, 'payload_request_user')->withPivot('is_served');
     }
 }
