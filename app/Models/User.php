@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Config;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use OwenIt\Auditing\Contracts\Auditable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements Auditable
 {
@@ -46,5 +47,26 @@ class User extends Authenticatable implements Auditable
     public function payloadRequests() {
 
         return $this->belongsToMany(PayloadRequest::class, 'payload_request_user')->withPivot('is_served');
+    }
+
+    public static function getLessLoadOfficer() {
+
+        $officers =  self::role(Config::get('constants.roles.officer_role'))->get();
+
+        $lessLoadOfficer = $officers[0];
+        $lessLoad = $lessLoadOfficer->payloadRequests()->where('is_served', 0)->count();
+
+        foreach($officers as $officer) {
+
+            $numOfRequests = $officer->payloadRequests()->where('is_served', 0)->count();
+            
+            if($numOfRequests < $lessLoad) {
+                $lessLoad = $numOfRequests;
+                $lessLoadOfficer = $officer;
+            }
+        }
+
+        return $lessLoadOfficer;
+
     }
 }

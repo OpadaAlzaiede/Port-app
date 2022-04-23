@@ -28,9 +28,11 @@ class DatabaseSeeder extends Seeder
             User::factory()->create([
                 'username' => 'user'.$i
             ])->assignRole($userRole);
+
+            User::factory()->create(['username' => 'officer'.$i])->assignRole($officerRole);
         }
 
-        User::factory()->create(['username' => 'officer'])->assignRole($officerRole);
+        
         User::factory()->create(['username' => 'admin'])->assignRole($adminRole);
         PayloadType::factory(5)->create();
         ProcessType::factory(5)->create();
