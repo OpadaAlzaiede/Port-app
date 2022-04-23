@@ -39,7 +39,6 @@ class User extends Authenticatable implements Auditable
 
     public static function getUserByRoleName($role) {
 
-        return self::role($role)
-                    ->first();
+        return self::role($role)->first();
     }
 }

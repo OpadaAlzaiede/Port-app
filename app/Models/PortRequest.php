@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\constants\DataBaseConstants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class PortRequest extends Model
 {
@@ -31,5 +33,26 @@ class PortRequest extends Model
     public function portRequestItems()
     {
         return $this->hasMany(PortRequestItem::class, 'enter_port_request_id', 'id');
+    }
+
+    public function Path()
+    {
+        return $this->belongsToMany(User::class, 'user_enter_port_request', 'enter_port_request_id', 'user_id')->withPivot(['is_served']);
+    }
+
+    public function createPath()
+    {
+
+        $this->path()->attach(Auth::id(), [
+            'is_served' => 1,
+        ]);
+        $officer = User::getUserByRoleName(DataBaseConstants::OFFICER_ROLE);
+        $this->path()->attach([
+            $officer->id => [
+                'is_served' => 0,
+            ]
+        ]);
+
+        $this->save();
     }
 }

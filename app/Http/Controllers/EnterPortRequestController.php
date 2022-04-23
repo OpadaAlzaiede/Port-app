@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\constants\DataBaseConstants;
 use App\Http\Requests\StoreEnterPortRequestRequest;
 use App\Http\Requests\UpdateEnterPortRequestRequest;
 use App\Http\Resources\EnterPortRequestResource;
@@ -15,6 +16,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class EnterPortRequestController extends Controller
 {
+    use \App\Traits\Request;
 
     /**
      * EnterPortRequestController constructor.
@@ -49,7 +51,8 @@ class EnterPortRequestController extends Controller
     {
         $data = $request->validated();
         $data['user_id'] = Auth::id();
-        $data['status'] = 0;
+        $data['status'] = DataBaseConstants::getStatusesArr()["IN_PROGRESS"];
+        $data['way'] = DataBaseConstants::getWaysArr()["FORWARD"];
         $enterPortRequest = PortRequest::create($data);
         $enterPortRequestItems = $request->get('enter_port_request_items');
         foreach ($enterPortRequestItems as $enterPortRequestItem) {
@@ -59,6 +62,9 @@ class EnterPortRequestController extends Controller
                 'enter_port_request_id' => $enterPortRequest->id,
             ]);
         }
+
+        $enterPortRequest->createPath();
+
         return $this->resource($enterPortRequest->load([
             'processType',
             'payloadType',
@@ -137,5 +143,47 @@ class EnterPortRequestController extends Controller
         $enterPortRequest->delete();
 
         return $this->success([], 'deleted Successfully');
+    }
+
+    public function approve($id)
+    {
+
+        $enterPortRequest = PortRequest::find($id);
+
+        if (!$enterPortRequest)
+            return $this->error(404, 'Not Found !');
+
+        if (!$this->checkIfCanMakeAction($enterPortRequest))
+            return $this->error(401, 'unauthorized !');
+
+        if (Auth::user()->hasRole(DataBaseConstants::OFFICER_ROLE)) {
+            $this->approveAsOfficer($enterPortRequest);
+
+            return $this->resource($enterPortRequest);
+        }
+
+        return $this->resource($enterPortRequest);
+    }
+
+    private function checkIfCanMakeAction($request)
+    {
+
+        $userRecord = $request->path()->where('user_id', Auth::id())->first();
+
+        if ($userRecord->pivot->is_served != 0)
+            return false;
+
+        return true;
+    }
+
+    private function approveAsOfficer($enterPortRequest)
+    {
+
+        $this->setRequest(PortRequest::class, $enterPortRequest);
+
+        $this->approveRequest($enterPortRequest);
+
+
+        $this->setAsUnread(PortRequest::class, $enterPortRequest);
     }
 }
