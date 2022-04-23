@@ -34,7 +34,6 @@ trait Request
             'is_served' => 0
         ]]);
 
-        $this->requestObject->level++;
         $this->requestObject->save();
 
         $this->setAsUnread($this->requestModel, $this->requestObject);
@@ -55,7 +54,6 @@ trait Request
 
         $this->markAsBackwardRequest();
 
-        $this->requestObject->level--;
         $this->requestObject->save();
 
         $this->setAsUnread($this->requestModel, $this->requestObject);
@@ -74,7 +72,6 @@ trait Request
         $nextUserRecord->pivot->save();
 
         $this->markAsForwardRequest();
-        $this->requestObject->level++;
         $this->requestObject->save();
 
         $this->setAsUnread($this->requestModel, $this->requestObject);
@@ -107,19 +104,19 @@ trait Request
 
     private function markAsForwardRequest() {
 
-        $this->requestObject->status = DataBaseConstants::getWaysArr()['FORWARD'];
+        $this->requestObject->way = DataBaseConstants::getWaysArr()['FORWARD'];
         $this->requestObject->save();
     }
 
     private function markAsBackwardRequest() {
 
-        $this->requestObject->status = DataBaseConstants::getWaysArr()['BACKWARD'];
+        $this->requestObject->way = DataBaseConstants::getWaysArr()['BACKWARD'];
         $this->requestObject->save();
     }
 
     private function markAsHoldingRequest() {
 
-        $this->requestObject->status = DataBaseConstants::getWaysArr()['HOLDING'];
+        $this->requestObject->way = DataBaseConstants::getWaysArr()['HOLDING'];
         $this->requestObject->save();
     }
 
@@ -130,7 +127,7 @@ trait Request
         $this->refuseModel = $refuseModel;
     }
 
-    public function getRequestsDependingOnStatus($status, $relation, $includes, $filters, $compareColumn, $column, $isServed, $perPage, $page) {
+    public function getRequestsDependingOnStatus($status, $relation, $includes, $filters, $isServed, $perPage, $page) {
 
         $requests = $relation->where('is_served', $isServed);
 
@@ -138,7 +135,6 @@ trait Request
                             ->allowedIncludes($includes)
                             ->allowedFilters($filters)
                             ->where('status', $status)
-                            ->where($compareColumn, $column)
                             ->defaultSort('-id')
                             ->paginate($perPage, ['*'], 'page', $page);
     }

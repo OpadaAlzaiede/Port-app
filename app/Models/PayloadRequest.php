@@ -56,7 +56,7 @@ class PayloadRequest extends Model
             'is_served' => DataBaseConstants::IS_SERVED_YES
         ]]);
 
-        $officer = User::getUserByRoleName(Config::get('constants.roles.officer_role'));
+        $officer = User::getLessLoadOfficer();
 
         $this->path()->attach([$officer->id => [
             'is_served' => DataBaseConstants::IS_SERVED_NO

@@ -3,15 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\constants\DataBaseConstants;
+use App\Http\Requests\RefusePayloadRequestRequest;
 use App\Http\Requests\StoreEnterPortRequestRequest;
 use App\Http\Requests\UpdateEnterPortRequestRequest;
 use App\Http\Resources\EnterPortRequestResource;
 use App\Models\PortRequest;
 use App\Models\PortRequestItem;
+use App\Models\Rejection;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class EnterPortRequestController extends Controller
@@ -145,25 +150,6 @@ class EnterPortRequestController extends Controller
         return $this->success([], 'deleted Successfully');
     }
 
-    public function approve($id)
-    {
-
-        $enterPortRequest = PortRequest::find($id);
-
-        if (!$enterPortRequest)
-            return $this->error(404, 'Not Found !');
-
-        if (!$this->checkIfCanMakeAction($enterPortRequest))
-            return $this->error(401, 'unauthorized !');
-
-        if (Auth::user()->hasRole(DataBaseConstants::OFFICER_ROLE)) {
-            $this->approveAsOfficer($enterPortRequest);
-
-            return $this->resource($enterPortRequest);
-        }
-
-        return $this->resource($enterPortRequest);
-    }
 
     private function checkIfCanMakeAction($request)
     {
@@ -176,14 +162,64 @@ class EnterPortRequestController extends Controller
         return true;
     }
 
-    private function approveAsOfficer($enterPortRequest)
+    public function approve($id)
     {
 
-        $this->setRequest(PortRequest::class, $enterPortRequest);
+        $enterPortRequest = PortRequest::find($id);
 
-        $this->approveRequest($enterPortRequest);
+        if (!$enterPortRequest)
+            return $this->error(404, Config::get('constants.errors.not_found'));
 
+        if (!$this->checkIfCanMakeAction($enterPortRequest))
+            return $this->error(401, Config::get('constants.errors.unauthorized'));
 
-        $this->setAsUnread(PortRequest::class, $enterPortRequest);
+        $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
+        $this->approveRequest(Auth::user());
+
+        return $this->resource($enterPortRequest->load($this->includes));
+    }
+
+    public function refuse(RefusePayloadRequestRequest $request, $id)
+    {
+
+        $enterPortRequest = PortRequest::find($id);
+
+        if (!$enterPortRequest)
+            return $this->error(404, Config::get('constants.errors.not_found'));
+
+        if (!$this->checkIfCanMakeAction($enterPortRequest))
+            return $this->error(401, Config::get('constants.errors.unauthorized'));
+
+        $data['reason'] = $request->reason;
+        $data['date'] = Carbon::now();
+        $data['rejectable_type'] = PortRequest::class;
+        $data['rejectable_id'] = $enterPortRequest->id;
+        $data['user_id'] = Auth::id();
+
+        $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
+
+        $user = User::find($enterPortRequest->user_id);
+
+        $this->refuseRequest(Auth::user(), $user, $data);
+
+        return $this->resource($enterPortRequest);
+    }
+
+    public function cancel($id)
+    {
+
+        $enterPortRequest = PortRequest::find($id);
+
+        if (!$enterPortRequest)
+            return $this->error(404, Config::get('constants.errors.not_found'));
+
+        if (!$this->checkIfCanMakeAction($enterPortRequest))
+            return $this->error(401, Config::get('constants.errors.unauthorized'));
+
+        $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
+
+        $this->cancelRequest(Auth::user());
+
+        return $this->resource($enterPortRequest);
     }
 }

@@ -74,7 +74,6 @@ trait UnReadable
             $notify->notifyable_id = $requestId;
             $notify->notifyable_type = $model;
             $notify->type = $type;
-            $notify->municipality_id = Auth::user()->municipality_id;
             $notify->save();
     }
 
