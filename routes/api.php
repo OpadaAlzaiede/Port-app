@@ -10,6 +10,8 @@ use App\Http\Controllers\ProcessTypeController;
 use App\Http\Controllers\TugboatController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\YardController;
+use App\Models\User;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,29 +32,46 @@ Route::post('reset-password', [UserController::class, 'resetPassword']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
-    Route::post('/logout', [AuthController::class, 'logout']);
-
-    Route::get('/admin/notifications', [AdminController::class, 'getNotifications']);
-
-    Route::resource('/payload-types', PayloadTypeController::class);
 
     Route::prefix('payload-requests')->group(function() {
+
         Route::get('/pendings', [PayloadRequestController::class, 'getPendings']);
         Route::get('/in-progress', [PayloadRequestController::class, 'getInProgress']);
         Route::get('/done', [PayloadRequestController::class, 'getDone']);
         Route::get('/canceled', [PayloadRequestController::class, 'getCanceled']);
-        Route::post('/{id}/approve', [PayloadRequestController::class, 'approve']);
-        Route::post('/{id}/refuse', [PayloadRequestController::class, 'refuse']);
-        Route::post('/{id}/cancel', [PayloadRequestController::class, 'cancel']);
+
+        Route::middleware('role:'.Config::get('constants.roles.officer_role'))->group(function() {
+            Route::post('/{id}/approve', [PayloadRequestController::class, 'approve'])->middleware('role');
+            Route::post('/{id}/refuse', [PayloadRequestController::class, 'refuse']);
+        });
+
+        Route::middleware('role:'.Config::get('constants.roles.user_role'))->group(function() {
+            Route::post('/{id}/cancel', [PayloadRequestController::class, 'cancel']);
+        });
+
         Route::resource('', PayloadRequestController::class);
     });
     
 
-    Route::resource('/piers', PierController::class);
-    Route::resource('/tugboats', TugboatController::class);
-    Route::resource('/yards', YardController::class);
+    // Officer Only Routes
+    Route::middleware('role:'.Config::get('constants.roles.officer_role'))->group(function() {
+        Route::resource('/piers', PierController::class);
+        Route::resource('/tugboats', TugboatController::class);
+        Route::resource('/yards', YardController::class);
+        Route::resource('/process-types', ProcessTypeController::class);
+        Route::resource('/payload-types', PayloadTypeController::class);
+    });
 
-    Route::resource('/process-types', ProcessTypeController::class);
+    // Admin only Routes
+    Route::middleware('role:'.Config::get('constants.roles.admin_role'))->group(function() {
+        Route::prefix('/admin')->group(function() {
+            Route::get('/notifications', [AdminController::class, 'getNotifications']);
+            Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
+        });
+    });
+    
+
+    Route::post('/logout', [AuthController::class, 'logout']);
+
     Route::resource('/enter-port-requests', EnterPortRequestController::class);
-    Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
 });

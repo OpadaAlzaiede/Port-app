@@ -11,6 +11,11 @@ class ProcessType extends Model
 
     protected $guarded = ['id'];
 
+    protected const TYPES = [
+        1 => 'LOADING',
+        2 => 'UNLOADING',
+    ];
+
     protected $table = 'process_types';
 
     public function enterPortRequest()
@@ -21,5 +26,10 @@ class ProcessType extends Model
     public function payloadRequests()
     {
         return $this->hasMany(PayloadRequest::class);
+    }
+
+    public static function getTypes() {
+
+        return self::TYPES;
     }
 }
