@@ -23,6 +23,7 @@ class PayloadRequestController extends Controller
     use CustomRequest;
 
     private $includes = ['payloadRequestItems', 'processType', 'payloadType', 'user', 'refusals'];
+    private $filters = ['id', 'shipping_policy_number', 'ship_number'];
 
     public function __construct(Request $request)
     {
@@ -68,6 +69,7 @@ class PayloadRequestController extends Controller
         }
 
         $payloadRequest->createPath();
+        $this->setAsUnread(PayloadRequest::class, $payloadRequest);
 
         return $this->resource($payloadRequest->load($this->includes));
     }
@@ -139,6 +141,34 @@ class PayloadRequestController extends Controller
         $payloadRequest->delete();
         
         return $this->success([], Config::get('constants.success.delete'));
+    }
+
+    public function getPendings() {
+
+        $pendings = $this->scopeRequests(DataBaseConstants::getStatusesArr()['IN_PROGRESS'], 0);
+        $this->flushNotifications($pendings, 0);
+        return $this->collection($pendings);
+    }
+
+    public function getInProgress() {
+
+        $inProgress = $this->scopeRequests(DataBaseConstants::getStatusesArr()['IN_PROGRESS'], 1);
+        $this->flushNotifications($inProgress, 1);
+        return $this->collection($inProgress);
+    }
+
+    public function getDone() {
+
+        $dones = $this->scopeRequests(DataBaseConstants::getStatusesArr()['DONE'], 1);
+        $this->flushNotifications($dones, 2);
+        return $this->collection($dones);
+    }
+
+    public function getCanceled() {
+
+        $canceled = $this->scopeRequests(DataBaseConstants::getStatusesArr()['CANCELED'], 1);
+        $this->flushNotifications($canceled, 3);
+        return $this->collection($canceled);
     }
 
     public function approve($id) {

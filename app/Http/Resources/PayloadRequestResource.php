@@ -17,6 +17,7 @@ class PayloadRequestResource extends JsonResource
         return [
             'id' => $this->id,
             'status' => $this->status,
+            'way' => $this->way,
             'amount' => $this->amount,
             'shipping_policy_number' => $this->shipping_policy_number,
             'ship_number' => $this->ship_number,
@@ -26,7 +27,7 @@ class PayloadRequestResource extends JsonResource
             'user' => $this->whenLoaded('user'),
             'items' => $this->whenLoaded('payloadRequestItems'),
             'refusals' => $this->whenLoaded('refusals'),
-            'path' => $this->path,
+            'path' => UserResource::collection($this->path),
         ];
     }
 }

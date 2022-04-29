@@ -36,10 +36,17 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::resource('/payload-types', PayloadTypeController::class);
 
-    Route::post('/payload-requests/{id}/approve', [PayloadRequestController::class, 'approve']);
-    Route::post('/payload-requests/{id}/refuse', [PayloadRequestController::class, 'refuse']);
-    Route::post('/payload-requests/{id}/cancel', [PayloadRequestController::class, 'cancel']);
-    Route::resource('payload-requests', PayloadRequestController::class);
+    Route::prefix('payload-requests')->group(function() {
+        Route::get('/pendings', [PayloadRequestController::class, 'getPendings']);
+        Route::get('/in-progress', [PayloadRequestController::class, 'getInProgress']);
+        Route::get('/done', [PayloadRequestController::class, 'getDone']);
+        Route::get('/canceled', [PayloadRequestController::class, 'getCanceled']);
+        Route::post('/{id}/approve', [PayloadRequestController::class, 'approve']);
+        Route::post('/{id}/refuse', [PayloadRequestController::class, 'refuse']);
+        Route::post('/{id}/cancel', [PayloadRequestController::class, 'cancel']);
+        Route::resource('', PayloadRequestController::class);
+    });
+    
 
     Route::resource('/piers', PierController::class);
     Route::resource('/tugboats', TugboatController::class);
