@@ -34,8 +34,16 @@ class DatabaseSeeder extends Seeder
 
         
         User::factory()->create(['username' => 'admin'])->assignRole($adminRole);
-        PayloadType::factory(5)->create();
-        ProcessType::factory(5)->create();
+        
+        foreach(PayloadType::getTypes() as $type) {
+
+            PayloadType::create(['name' => $type]);
+        }
+
+        foreach(ProcessType::getTypes() as $type) {
+             
+            ProcessType::create(['name' => $type]);
+        }
 
         for ($i = 0; $i<10 ; $i++)
         {
@@ -46,11 +54,10 @@ class DatabaseSeeder extends Seeder
                'payload_weight' => mt_rand(10,20000),
                'ship_weight' => mt_rand(10,20000),
                'shipping_policy_number' => 'test' . $i * 10,
-                'status' => mt_rand(1,3),
-                'process_type_id' => mt_rand(1,5),
-                'payload_type_id' => mt_rand(1,5),
-                'user_id' => mt_rand(1,5),
-
+               'status' => mt_rand(1,3),
+               'process_type_id' => mt_rand(1,5),
+               'payload_type_id' => mt_rand(1,5),
+               'user_id' => mt_rand(1,5),
             ]);
 
             PayloadRequest::create([
