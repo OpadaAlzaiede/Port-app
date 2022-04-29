@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EnterPortRequestController;
 use App\Http\Controllers\PayloadRequestController;
@@ -51,7 +52,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
         Route::resource('', PayloadRequestController::class);
     });
-    
+
 
     // Officer Only Routes
     Route::middleware('role:'.Config::get('constants.roles.officer_role'))->group(function() {
@@ -67,9 +68,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::prefix('/admin')->group(function() {
             Route::get('/notifications', [AdminController::class, 'getNotifications']);
             Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
+            Route::get('/get-audits', [AuditController::class, 'getAudits']);
         });
     });
-    
+
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
