@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PayloadRequestResource extends JsonResource
@@ -26,7 +27,7 @@ class PayloadRequestResource extends JsonResource
             'user' => $this->whenLoaded('user'),
             'items' => $this->whenLoaded('payloadRequestItems'),
             'refusals' => RejectionResource::collection($this->whenLoaded('refusals')),
-            'path' => $this->path,
+            'path' => UserResource::collection($this->path),
         ];
     }
 }
