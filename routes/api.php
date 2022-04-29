@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EnterPortRequestController;
 use App\Http\Controllers\PayloadRequestController;
@@ -48,4 +49,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::resource('/process-types', ProcessTypeController::class);
     Route::resource('/enter-port-requests', EnterPortRequestController::class);
     Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
+    Route::get('/get-audits', [AuditController::class, 'getAudits']);
 });
