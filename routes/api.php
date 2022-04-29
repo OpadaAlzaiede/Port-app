@@ -34,6 +34,8 @@ Route::post('reset-password', [UserController::class, 'resetPassword']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
 
+    Route::get('/notifications', [UserController::class, 'getNotifications']);
+
     Route::prefix('payload-requests')->group(function() {
 
         Route::get('/pendings', [PayloadRequestController::class, 'getPendings']);
@@ -42,7 +44,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/canceled', [PayloadRequestController::class, 'getCanceled']);
 
         Route::middleware('role:'.Config::get('constants.roles.officer_role'))->group(function() {
-            Route::post('/{id}/approve', [PayloadRequestController::class, 'approve'])->middleware('role');
+            Route::post('/{id}/approve', [PayloadRequestController::class, 'approve']);
             Route::post('/{id}/refuse', [PayloadRequestController::class, 'refuse']);
         });
 
@@ -50,17 +52,20 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::post('/{id}/cancel', [PayloadRequestController::class, 'cancel']);
         });
 
-        Route::resource('', PayloadRequestController::class);
+        Route::resource('', PayloadRequestController::class)->except(['update']);
+        Route::match(['put', 'patch'], '/{payloadRequest}', [PayloadRequestController::class, 'update'])->middleware('update');
     });
 
+    Route::resource('/process-types', ProcessTypeController::class)->only(['index', 'show']);
+    Route::resource('/payload-types', PayloadTypeController::class)->only(['index', 'show']);
 
     // Officer Only Routes
     Route::middleware('role:'.Config::get('constants.roles.officer_role'))->group(function() {
         Route::resource('/piers', PierController::class);
         Route::resource('/tugboats', TugboatController::class);
         Route::resource('/yards', YardController::class);
-        Route::resource('/process-types', ProcessTypeController::class);
-        Route::resource('/payload-types', PayloadTypeController::class);
+        Route::resource('/process-types', ProcessTypeController::class)->except(['index', 'show']);
+        Route::resource('/payload-types', PayloadTypeController::class)->except(['index', 'show']);
     });
 
     // Admin only Routes

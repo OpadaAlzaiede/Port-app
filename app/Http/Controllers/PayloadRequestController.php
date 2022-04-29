@@ -97,13 +97,8 @@ class PayloadRequestController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePayloadRequestRequest $request, $id)
+    public function update(UpdatePayloadRequestRequest $request, PayloadRequest $payloadRequest)
     {
-        $payloadRequest = PayloadRequest::find($id);
-
-        if(!$payloadRequest)
-            return $this->error(404, Config::get('constants.errors.not_found'));
-
         if($request->items) {
             $payloadRequest->payloadRequestItems()->delete();
             foreach($request->items as $item) {

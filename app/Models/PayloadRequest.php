@@ -65,4 +65,9 @@ class PayloadRequest extends Model implements Auditable
             'is_served' => DataBaseConstants::IS_SERVED_NO
         ]]);
     }
+
+    public function isInProgress() {
+
+        return $this->status === DataBaseConstants::getStatusesArr()['IN_PROGRESS'];
+    }
 }
