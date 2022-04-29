@@ -11,6 +11,7 @@ use App\Models\ProcessType;
 use App\Models\Rejection;
 use App\Models\ShipTugboat;
 use App\Models\TugBoat;
+use App\Models\User;
 use App\Models\Yard;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -66,6 +67,9 @@ class AuditResource extends JsonResource
                 break;
             case Rejection::class :
                 return new RejectionResource($auditable);
+                break;
+            case User::class :
+                return new UserResource($auditable);
                 break;
             default:
                 return null;

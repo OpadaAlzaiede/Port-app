@@ -68,6 +68,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::prefix('/admin')->group(function() {
             Route::get('/notifications', [AdminController::class, 'getNotifications']);
             Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
+            Route::get('/get-audits', [AuditController::class, 'getAudits']);
         });
     });
 
@@ -75,8 +76,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::resource('/enter-port-requests', EnterPortRequestController::class);
-
-    Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
-    Route::get('/get-audits', [AuditController::class, 'getAudits']);
-
 });
