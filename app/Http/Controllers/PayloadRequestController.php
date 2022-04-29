@@ -97,25 +97,25 @@ class PayloadRequestController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePayloadRequestRequest $request, PayloadRequest $payloadRequest)
+    public function update(UpdatePayloadRequestRequest $request, PayloadRequest $requestObject)
     {
         if($request->items) {
-            $payloadRequest->payloadRequestItems()->delete();
+            $requestObject->payloadRequestItems()->delete();
             foreach($request->items as $item) {
                 PayloadRequestItem::create([
                     'name' => $item['name'],
                     'amount' => $item['amount'],
-                    'payload_request_id' => $payloadRequest->id
+                    'payload_request_id' => $requestObject->id
                 ]);
             }
         }
-        $this->setRequest(PayloadRequest::class, $payloadRequest, Rejection::class);
+        $this->setRequest(PayloadRequest::class, $requestObject, Rejection::class);
 
         $officer = User::getUserByRoleName(Config::get('constants.roles.officer_role'));
 
         $this->reProcessRequest(Auth::user(), $officer, $request->all());
 
-        return $this->resource($payloadRequest->load($this->includes));
+        return $this->resource($requestObject->load($this->includes));
     }
 
     /**

@@ -17,7 +17,7 @@ class CheckIfCanUpdate
      */
     public function handle(Request $request, Closure $next)
     {
-        $requestToBeUpdated = $request->route('payloadRequest');
+        $requestToBeUpdated = $request->route('requestObject');
         
         if($requestToBeUpdated->isInProgress() && $requestToBeUpdated->user_id == Auth::id())
             return $next($request);

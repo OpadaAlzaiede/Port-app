@@ -53,7 +53,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         });
 
         Route::resource('', PayloadRequestController::class)->except(['update']);
-        Route::match(['put', 'patch'], '/{payloadRequest}', [PayloadRequestController::class, 'update'])->middleware('update');
+        Route::match(['put', 'patch'], '/{requestObject}', [PayloadRequestController::class, 'update'])->middleware('update');
     });
 
     Route::resource('/process-types', ProcessTypeController::class)->only(['index', 'show']);
