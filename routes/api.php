@@ -11,6 +11,7 @@ use App\Http\Controllers\ProcessTypeController;
 use App\Http\Controllers\TugboatController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\YardController;
+use App\Http\Resources\PayloadRequestResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
@@ -50,10 +51,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
         Route::middleware('role:'.Config::get('constants.roles.user_role'))->group(function() {
             Route::post('/{id}/cancel', [PayloadRequestController::class, 'cancel']);
+            Route::put('/{requestObject}', [PayloadRequestController::class, 'update'])->middleware('update');
         });
-
-        Route::resource('', PayloadRequestController::class)->except(['update']);
-        Route::match(['put', 'patch'], '/{requestObject}', [PayloadRequestController::class, 'update'])->middleware('update');
+        Route::get('', [PayloadRequestController::class, 'index']);
+        Route::get('/{id}', [PayloadRequestController::class, 'show']);
+        Route::delete('/{id}', [PayloadRequestController::class, 'destroy']);
     });
 
     Route::resource('/process-types', ProcessTypeController::class)->only(['index', 'show']);
