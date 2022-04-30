@@ -52,6 +52,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::middleware('role:'.Config::get('constants.roles.user_role'))->group(function() {
             Route::post('/{id}/cancel', [PayloadRequestController::class, 'cancel']);
             Route::put('/{requestObject}', [PayloadRequestController::class, 'update'])->middleware('update');
+            Route::post('', [PayloadRequestController::class, 'store']);
         });
         Route::get('', [PayloadRequestController::class, 'index']);
         Route::get('/{id}', [PayloadRequestController::class, 'show']);

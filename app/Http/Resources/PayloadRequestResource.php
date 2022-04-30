@@ -27,7 +27,7 @@ class PayloadRequestResource extends JsonResource
             'user' => $this->whenLoaded('user'),
             'items' => $this->whenLoaded('payloadRequestItems'),
             'refusals' => RejectionResource::collection($this->whenLoaded('refusals')),
-            'path' => UserResource::collection($this->path),
+            'path' => $this->path->load('roles'),
         ];
     }
 }
