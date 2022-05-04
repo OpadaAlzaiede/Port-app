@@ -14,7 +14,8 @@ return [
         'password_reset_success' => 'We Have Sent new password to Your Email !'
     ],
     'roles' => [
-        'user_role' => 'user',
+        'merchant_role' => 'merchant',
+        'captain_role' => 'captain',
         'admin_role' => 'admin',
         'officer_role' => 'officer'
     ]

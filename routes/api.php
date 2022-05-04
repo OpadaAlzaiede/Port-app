@@ -8,6 +8,7 @@ use App\Http\Controllers\PayloadRequestController;
 use App\Http\Controllers\PayloadTypeController;
 use App\Http\Controllers\PierController;
 use App\Http\Controllers\ProcessTypeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TugboatController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\YardController;
@@ -84,4 +85,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::resource('/enter-port-requests', EnterPortRequestController::class);
+    Route::get('/roles', [RoleController::class, 'getRoles']);
 });

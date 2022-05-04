@@ -20,14 +20,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $userRole = Role::create(['name' => Config::get('constants.roles.user_role')]);
+        $merchantRole = Role::create(['name' => Config::get('constants.roles.merchant_role')]);
+        $captainRole = Role::create(['name' => Config::get('constants.roles.captain_role')]);
         $adminRole = Role::create(['name' => Config::get('constants.roles.admin_role')]);
         $officerRole = Role::create(['name' => Config::get('constants.roles.officer_role')]);
 
         for($i = 1; $i < 6; $i++) {
             User::factory()->create([
-                'username' => 'user'.$i
-            ])->assignRole($userRole);
+                'username' => 'merchant'.$i
+            ])->assignRole($merchantRole);
+
+            User::factory()->create([
+                'username' => 'captain'.$i
+            ])->assignRole($captainRole);
 
             User::factory()->create(['username' => 'officer'.$i])->assignRole($officerRole);
         }
