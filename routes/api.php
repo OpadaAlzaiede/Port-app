@@ -7,6 +7,7 @@ use App\Http\Controllers\EnterPortRequestController;
 use App\Http\Controllers\PayloadRequestController;
 use App\Http\Controllers\PayloadTypeController;
 use App\Http\Controllers\PierController;
+use App\Http\Controllers\PierYardController;
 use App\Http\Controllers\ProcessTypeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TugboatController;
@@ -69,6 +70,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/pier/distance-from-yards', [PierController::class, 'addDistanceBetweenPierAndYards']);
         Route::resource('/process-types', ProcessTypeController::class)->except(['index', 'show']);
         Route::resource('/payload-types', PayloadTypeController::class)->except(['index', 'show']);
+        Route::resource('/pier-yard', PierYardController::class)->except(['store', 'show']);
     });
 
     // Admin only Routes
