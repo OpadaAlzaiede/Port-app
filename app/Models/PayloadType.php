@@ -16,7 +16,7 @@ class PayloadType extends Model implements Auditable
         1 => 'LIQUID',
         2 => 'SOLID',
         3 => 'REFRIGERATED',
-        3 => 'MIXED',
+        4 => 'MIXED',
     ];
 
     public function payloadRequests()
