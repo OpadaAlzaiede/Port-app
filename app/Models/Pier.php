@@ -32,6 +32,11 @@ class Pier extends Model
         return $this->belongsToMany(PortRequest::class, 'enter_port_pier', 'pier_id', 'enter_port_request_id')->withPivot(['order', 'leave_date', 'enter_date']);
     }
 
+    public function payloadType()
+    {
+        return $this->belongsTo(PayloadType::class, 'payload_type_id', 'id');
+    }
+
 
     public static function getInServicePiers()
     {

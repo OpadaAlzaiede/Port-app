@@ -15,12 +15,13 @@ class PierFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'length' => $this->faker->numberBetween(1000, 2000),
-            'draft' => $this->faker->numberBetween(100, 900),
-            'code' => $this->faker->postcode(),
-            'type' => rand(0, 1),
-            'payload_type_id' => rand(1,4),
-            'status' => rand(0, 1),
+                'length' => mt_rand(1, 200),
+                'draft' => mt_rand(1, 200),
+                // 'code' => ucwords($this->faker->text(4)) . rand(20,100),
+                'code' => $this->faker->countryCode(). '-'.rand(10,100),
+                'type' => rand(1, 2),
+                'payload_type_id' => rand(1, 4),
+                'status' => rand(1, 2),
         ];
     }
 }

@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use App\constants\DataBaseConstants;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class PayloadRequest extends Model
+class PayloadRequest extends Model implements Auditable
 {
-    use HasFactory;
+    use HasFactory, \OwenIt\Auditing\Auditable;
 
     protected $guarded = ['id'];
 
@@ -35,22 +34,26 @@ class PayloadRequest extends Model
         return $this->hasMany(PayloadRequestItem::class);
     }
 
-    public function path() {
+    public function path()
+    {
 
         return $this->belongsToMany(User::class)->withPivot('is_served');
     }
 
-    public function refusals() {
+    public function refusals()
+    {
 
         return $this->morphMany(Rejection::class, 'rejectable');
     }
 
-    public function isDone() {
+    public function isDone()
+    {
 
         return $this->status = DataBaseConstants::getStatusesArr()['DONE'];
     }
 
-    public function createPath() {
+    public function createPath()
+    {
 
         $this->path()->attach([Auth::id() => [
             'is_served' => DataBaseConstants::IS_SERVED_YES
@@ -61,5 +64,10 @@ class PayloadRequest extends Model
         $this->path()->attach([$officer->id => [
             'is_served' => DataBaseConstants::IS_SERVED_NO
         ]]);
+    }
+
+    public function isInProgress() {
+
+        return $this->status === DataBaseConstants::getStatusesArr()['IN_PROGRESS'];
     }
 }

@@ -4,14 +4,15 @@ namespace App\Http\Requests;
 
 use App\Traits\JsonErrors;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateYardRequest extends FormRequest
+class StorePierYardRequest extends FormRequest
 {
+
     use JsonErrors;
 
     /**
      * Determine if the user is authorized to make this request.
-     *
      * @return bool
      */
     public function authorize()
@@ -21,14 +22,16 @@ class UpdateYardRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
      * @return array
      */
     public function rules()
     {
-        return [
-            'size' => 'required|numeric',
-            'payload_type_id' => 'required|exists:payload_types,id',
-        ];
+        return
+            [
+                'pier_id' => ['required', 'integer', Rule::exists('piers', 'id')],
+                'yards' => ['required', 'array'],
+                'yards.*.id' => ['required', 'integer', Rule::exists('yards', 'id')],
+                'yards.*.distance' => ['required', 'numeric']
+            ];
     }
 }

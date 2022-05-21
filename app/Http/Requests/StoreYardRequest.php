@@ -28,7 +28,7 @@ class StoreYardRequest extends FormRequest
     {
         return [
             'size' => 'required|numeric',
-            'function' => 'required|string'
+            'payload_type_id' => 'required|exists:payload_types,id',
         ];
     }
 }

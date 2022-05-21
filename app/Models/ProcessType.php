@@ -4,12 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class ProcessType extends Model
+class ProcessType extends Model implements Auditable
 {
-    use HasFactory;
+    use HasFactory, \OwenIt\Auditing\Auditable;
 
     protected $guarded = ['id'];
+
+    protected const TYPES = [
+        1 => 'LOADING',
+        2 => 'UNLOADING',
+    ];
 
     protected $table = 'process_types';
 
@@ -21,5 +27,10 @@ class ProcessType extends Model
     public function payloadRequests()
     {
         return $this->hasMany(PayloadRequest::class);
+    }
+
+    public static function getTypes() {
+
+        return self::TYPES;
     }
 }
