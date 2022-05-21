@@ -24,8 +24,9 @@ class PierResource extends JsonResource
             'draft' => $this->draft,
             'code' => $this->code,
             'type' => $this->type,
+            'yards' => $this->yards,
             'function' => $this->function,
-            'status' => $this->status
+            'status' => $this->status,
         ];
     }
 }

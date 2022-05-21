@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePierRequest;
+use App\Http\Requests\StorePierYardRequest;
 use App\Http\Requests\UpdatePierRequest;
 use App\Http\Resources\PierResource;
 use App\Models\Pier;
@@ -98,5 +99,22 @@ class PierController extends Controller
         $pier->delete();
 
         return $this->success([], Config::get('constants.success.delete'));
+    }
+
+    /**
+     * @param StorePierYardRequest $request
+     * @return mixed
+     */
+    public function addDistanceBetweenPierAndYards(StorePierYardRequest $request)
+    {
+        $pier = Pier::find($request->get('pier_id'));
+        $yards = $request->get('yards');
+        foreach ($yards as $yard) {
+            $pier->yards()->attach($pier->id, [
+                'yard_id' => $yard['id'],
+                'distance' => $yard['distance']
+            ]);
+        }
+        return $this->resource($pier);
     }
 }

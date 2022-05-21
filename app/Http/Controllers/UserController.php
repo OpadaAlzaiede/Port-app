@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ForgetPasswordRequest;
-use App\Mail\ResetPasswordMail;
 use App\Models\User;
+use App\Models\Notify;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
+use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
+use App\Http\Requests\ForgetPasswordRequest;
 
 class UserController extends Controller
 {
@@ -25,5 +28,28 @@ class UserController extends Controller
         });
 
         return $this->success([], Config::get('constants.success.password_reset_success'));
+    }
+
+    public function getNotifications() {
+
+        $notifications = array();
+
+        foreach(Notify::getNotifiables() as $model) {
+            
+            $unRead= DB::table('request_notifications')
+                            ->selectRaw("COUNT(*) AS 'count', type")
+                            ->where('user_id' , Auth::id())
+                            ->where('notifyable_type', $model)
+                            ->where('is_read' , 0)
+                            ->groupBy('type')
+                            ->get();
+
+        $split_model = explode('\\', $model);
+        $directory = $split_model[count($split_model)-1];
+
+            $notifications[$directory] = $unRead;
+        }
+
+        return response()->json($notifications);
     }
 }

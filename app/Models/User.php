@@ -65,6 +65,7 @@ class User extends Authenticatable implements Auditable
 
         foreach ($officers as $officer) {
 
+            // Update to add PortRequests ..
             $numOfRequests = $officer->payloadRequests()->where('is_served', 0)->count();
 
             if ($numOfRequests < $lessLoad) {
