@@ -115,15 +115,15 @@ class DatabaseSeeder extends Seeder
                 'user_id' => mt_rand(1, 5),
             ]);
 
-            Pier::create([
-                'name' => 'test' . $i,
-                'length' => mt_rand(1, 200),
-                'draft' => mt_rand(1, 200),
-                'code' => 'test' . $i . '*' . $i,
-                'type' => mt_rand(1, 5),
-                'payload_type_id' => rand(1, 4),
-                'status' => mt_rand(1, 3),
-            ]);
+            // Pier::create([
+            //     'name' => ucwords($this->faker->name()) . rand(20,100),
+            //     'length' => mt_rand(1, 200),
+            //     'draft' => mt_rand(1, 200),
+            //     'code' => 'test' . $i . '*' . $i,
+            //     'type' => rand(1, 2),
+            //     'payload_type_id' => rand(1, 4),
+            //     'status' => rand(1, 2),
+            // ]);
 
             Yard::create([
                 'size' => mt_rand(1, 3000),

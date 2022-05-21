@@ -44,7 +44,7 @@ class RegisterRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'phone' => 'required',
             'role_id' => ['required', Rule::exists('roles', 'id')->whereNotIn('id', $systemRoles)],
-            'password' => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/|confirmed'
+            'password' => 'required|min:8|confirmed'
         ];
     }
 }
