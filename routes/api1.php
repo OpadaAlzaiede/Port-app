@@ -19,4 +19,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
 
     Route::resource('/enter-port-requests', EnterPortRequestController::class);
+    Route::post('/enter-port-requests/{id}/approve', [EnterPortRequestController::class, 'approve']);
+    Route::post('/enter-port-requests/{id}/refuse', [EnterPortRequestController::class, 'refuse']);
+    Route::post('/enter-port-requests/{id}/cancel', [EnterPortRequestController::class, 'cancel']);
 });

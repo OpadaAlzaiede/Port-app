@@ -15,7 +15,7 @@ class CreatePayloadTypesTable extends Migration
     {
         Schema::create('payload_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name'); //  مبردة  سائلة صلبة مختلطة
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });

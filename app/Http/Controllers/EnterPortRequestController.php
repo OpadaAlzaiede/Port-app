@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\constants\DataBaseConstants;
+use App\Http\Requests\ApproveEnterPortRequest;
 use App\Http\Requests\RefusePayloadRequestRequest;
 use App\Http\Requests\StoreEnterPortRequestRequest;
 use App\Http\Requests\UpdateEnterPortRequestRequest;
 use App\Http\Resources\EnterPortRequestResource;
+use App\Models\Pier;
 use App\Models\PortRequest;
 use App\Models\PortRequestItem;
 use App\Models\Rejection;
@@ -39,7 +41,7 @@ class EnterPortRequestController extends Controller
     public function index()
     {
         $enterPortRequests = QueryBuilder::for(PortRequest::class)
-            ->allowedIncludes(['processType', 'payloadType', 'user'])
+            ->allowedIncludes(['processType', 'payloadType', 'user', 'portRequestItems'])
             ->allowedFilters(['ship_name', 'payload_weight', 'shipping_policy_number', 'status'])
             ->defaultSort('-id')
             ->paginate($this->perPage, ['*'], 'page', $this->page);
@@ -162,7 +164,7 @@ class EnterPortRequestController extends Controller
         return true;
     }
 
-    public function approve($id)
+    public function approve(ApproveEnterPortRequest $request, $id)
     {
 
         $enterPortRequest = PortRequest::find($id);
@@ -174,9 +176,17 @@ class EnterPortRequestController extends Controller
             return $this->error(401, Config::get('constants.errors.unauthorized'));
 
         $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
+
+
+        $this->attachPortPier($this->chooseAvailablePier($enterPortRequest), $enterPortRequest, $request->validated());
         $this->approveRequest(Auth::user());
 
-        return $this->resource($enterPortRequest->load($this->includes));
+        return $this->resource($enterPortRequest->load([
+            'processType',
+            'payloadType',
+            'user',
+            'portRequestItems'
+        ]));
     }
 
     public function refuse(RefusePayloadRequestRequest $request, $id)
@@ -202,7 +212,12 @@ class EnterPortRequestController extends Controller
 
         $this->refuseRequest(Auth::user(), $user, $data);
 
-        return $this->resource($enterPortRequest);
+        return $this->resource($enterPortRequest->load([
+            'processType',
+            'payloadType',
+            'user',
+            'portRequestItems'
+        ]));
     }
 
     public function cancel($id)
@@ -220,6 +235,63 @@ class EnterPortRequestController extends Controller
 
         $this->cancelRequest(Auth::user());
 
-        return $this->resource($enterPortRequest);
+        return $this->resource($enterPortRequest->load([
+            'processType',
+            'payloadType',
+            'user',
+            'portRequestItems'
+        ]));
+    }
+
+    private function scopeRequests($status, $isServed)
+    {
+
+        $requests = $this->getRequestsDependingOnStatus(
+            $status,
+            Auth::user()->enterPortRequests(),
+            $this->includes,
+            $this->filters,
+            $isServed,
+            $this->perPage,
+            $this->page
+        );
+
+        return $requests;
+    }
+
+    private function flushNotifications($requests, $status)
+    {
+
+        if ($requests)
+            foreach ($requests as $request) {
+                $this->setAsRead(Auth::id(), $request->id, $status, PortRequest::class);
+            }
+    }
+
+    private function chooseAvailablePier(PortRequest $enterPortRequest)
+    {
+        dd($enterPortRequest->pickPier($enterPortRequest));
+        return $enterPortRequest->pickPier($enterPortRequest->ship_draft_length);
+    }
+
+    private function attachPortPier(Pier $pier, PortRequest $enterPortRequest, $dateDetails)
+    {
+        if (!$pier->enterPortRequests()->exists()) {
+            $pier->enterPortRequests()->attach($enterPortRequest->id, [
+                'order' => 1,
+                'enter_date' => $dateDetails['enter_date'],
+                'leave_date' => $dateDetails['leave_date'],
+            ]);
+            return;
+        }
+
+        $getLastPierOrder = $pier->enterPortRequests()->latest('id')->first();
+
+        $pier->enterPortRequests()->attach($enterPortRequest->id, [
+            'order' => ++$getLastPierOrder->order,
+            'enter_date' => $dateDetails['enter_date'],
+            'leave_date' => $dateDetails['leave_date'],
+        ]);
+//dd(2);
     }
 }

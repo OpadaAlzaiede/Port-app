@@ -55,4 +55,29 @@ class PortRequest extends Model
 
         $this->save();
     }
+
+    public function pickPier($enterPortRequest)
+    {
+
+        $availablePiers = Pier::getInServicePiers();
+        $pierWithAppropriateLength = Pier::scopeLength($availablePiers, $enterPortRequest->ship_draft_length);
+        $piers = Pier::matchPayloadType($pierWithAppropriateLength, $enterPortRequest->payload_type_id)->get();
+
+        $result = Pier::getMinimumLoadingPiers($piers);
+
+        if ($enterPortRequest->payload_type_id == DataBaseConstants::FOURTH) {
+            foreach ($piers as $pier)
+                if (!$pier->enterPortPiers()->exists())
+                    return $pier;
+
+            return array_key_first($result);
+        } else {
+
+            dd($result);
+
+        }
+
+
+    }
+
 }

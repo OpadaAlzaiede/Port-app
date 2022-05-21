@@ -20,7 +20,7 @@ class CreatePiersTable extends Migration
             $table->double('draft');
             $table->string('code');
             $table->tinyInteger('type');
-            $table->string('function');
+            $table->unsignedBigInteger('payload_type_id');
             $table->tinyInteger('status');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();

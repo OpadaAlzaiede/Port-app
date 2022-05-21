@@ -11,6 +11,10 @@ class DataBaseConstants
         "DONE" => 2,
         "CANCELED" => 3
     ];
+    const PIER_STATUSES = [
+        "IN_SERVICE" => 1,
+        "OUT_OF_SERVICE" => 2,
+    ];
 
     const WAYS = [
         "FORWARD" => 1,
@@ -26,6 +30,13 @@ class DataBaseConstants
     const ADMIN_ROLE = 'admin';
     const OFFICER_ROLE = 'officer';
 
+    //payload types
+    const FIRST = 1;
+    const SECOND = 2;
+    const THIRD = 3;
+    const FOURTH = 4;
+
+
     public static function getStatusesArr()
     {
         return self::STATUSES;
@@ -34,5 +45,10 @@ class DataBaseConstants
     public static function getWaysArr()
     {
         return self::WAYS;
+    }
+
+    public static function getPierStatusArr()
+    {
+        return self::PIER_STATUSES;
     }
 }

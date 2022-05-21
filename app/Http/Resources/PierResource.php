@@ -18,6 +18,7 @@ class PierResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'length' => $this->length,
             'draft' => $this->draft,

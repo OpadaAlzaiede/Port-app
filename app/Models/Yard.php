@@ -15,4 +15,9 @@ class Yard extends Model
     {
         return $this->belongsToMany(Pier::class, 'pier_yard')->withPivot(['distance']);
     }
+
+    public function payloadType()
+    {
+        return $this->belongsTo(PayloadType::class, 'payload_type_id', 'id');
+    }
 }
