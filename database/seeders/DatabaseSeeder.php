@@ -123,13 +123,13 @@ class DatabaseSeeder extends Seeder
                 'draft' => mt_rand(1, 200),
                 'code' => 'test' . $i . '*' . $i,
                 'type' => mt_rand(1, 5),
-                'function' => 'test',
+                'payload_type_id' => rand(1, 4),
                 'status' => mt_rand(1, 3),
             ]);
 
             Yard::create([
                 'size' => mt_rand(1, 3000),
-                'function' => 'test',
+                'payload_type_id' => rand(1, 4),
             ]);
         }
     }
