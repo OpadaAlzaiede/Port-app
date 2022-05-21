@@ -7,25 +7,21 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use JsonSerializable;
 
-class PierResource extends JsonResource
+class PierYardResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
-     *
      * @param Request $request
      * @return array|Arrayable|JsonSerializable
      */
     public function toArray($request)
     {
-        return [
-            'name' => $this->name,
-            'length' => $this->length,
-            'draft' => $this->draft,
-            'code' => $this->code,
-            'type' => $this->type,
-            'yards' => $this->yards,
-            'function' => $this->function,
-            'status' => $this->status,
-        ];
+        return
+            [
+                'id' => $this->id,
+                'pier' => $this->pier,
+                'yard' => $this->yard,
+                'distance' => $this->distance
+            ];
     }
 }

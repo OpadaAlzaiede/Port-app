@@ -18,6 +18,6 @@ class Pier extends Model
 
     public function yards()
     {
-        return $this->belongsToMany(Yard::class, 'pier_yard')->withPivot(['distance']);
+        return $this->belongsToMany(Yard::class, 'pier_yard', 'pier_id', 'yard_id')->withPivot(['distance']);
     }
 }
