@@ -44,7 +44,6 @@ class DatabaseSeeder extends Seeder
 
 
         User::factory()->create(['username' => 'admin'])->assignRole($adminRole);
-        ProcessType::factory(5)->create();
         Pier::factory(5)->create();
 
         $piers = Pier::all();
