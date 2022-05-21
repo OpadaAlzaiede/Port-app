@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('reset-password', [UserController::class, 'resetPassword']);
+Route::get('/roles', [RoleController::class, 'getRoles']);
+
 
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
@@ -86,5 +88,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::resource('/enter-port-requests', EnterPortRequestController::class);
-    Route::get('/roles', [RoleController::class, 'getRoles']);
 });
