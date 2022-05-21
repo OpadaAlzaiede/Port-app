@@ -17,7 +17,7 @@ class CreateEnterPortPierTable extends Migration
             $table->id();
             $table->integer('order');
             $table->dateTime('enter_date');
-            $table->dateTime('leave_date');
+            $table->dateTime('leave_date')->nullable(true);
             $table->unsignedBigInteger('enter_port_request_id');
             $table->unsignedBigInteger('pier_id');
             $table->timestamps();
