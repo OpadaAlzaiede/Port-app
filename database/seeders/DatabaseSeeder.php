@@ -9,8 +9,6 @@ use App\Models\PortRequest;
 use App\Models\ProcessType;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use App\Models\Yard;
 use Illuminate\Database\Seeder;
@@ -32,9 +30,6 @@ class DatabaseSeeder extends Seeder
         $officerRole = Role::create(['name' => Config::get('constants.roles.officer_role')]);
 
         for ($i = 1; $i < 6; $i++) {
-            User::factory()->create([
-                'username' => 'user' . $i
-            ])->assignRole($userRole);
             
             User::factory()->create([
                 'username' => 'merchant' . $i
@@ -120,8 +115,6 @@ class DatabaseSeeder extends Seeder
                 'payload_type_id' => mt_rand(1, 5),
                 'process_type_id' => mt_rand(1, 5),
                 'user_id' => mt_rand(1, 5),
-<<<<<<< HEAD
-=======
             ]);
 
             Pier::create([
@@ -137,8 +130,8 @@ class DatabaseSeeder extends Seeder
             Yard::create([
                 'size' => mt_rand(1, 3000),
                 'function' => 'test',
->>>>>>> 2e31320c19b50774ff3b756a0839a9b9529150a2
             ]);
         }
     }
+}
 }
