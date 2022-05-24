@@ -26,7 +26,7 @@ class DataBaseConstants
     const IS_SERVED_NO = 0;
 
     //ROLES
-    const USER_ROLE = 'user';
+    const MERCHANT_ROLE = 'user';
     const ADMIN_ROLE = 'admin';
     const OFFICER_ROLE = 'officer';
 
