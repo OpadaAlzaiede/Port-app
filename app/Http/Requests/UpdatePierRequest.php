@@ -32,7 +32,7 @@ class UpdatePierRequest extends FormRequest
             'draft' => 'numeric',
             'code' => 'string',
             'type' => 'in:1,2',
-            'function' => 'string',
+            'payload_type_id' => 'required|exists:payload_types,id',
             'status' => 'in:1,2'
         ];
     }

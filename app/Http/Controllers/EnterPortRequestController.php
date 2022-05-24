@@ -2,19 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\constants\DataBaseConstants;
+use App\Http\Requests\ApproveEnterPortRequest;
+use App\Http\Requests\RefusePayloadRequestRequest;
 use App\Http\Requests\StoreEnterPortRequestRequest;
 use App\Http\Requests\UpdateEnterPortRequestRequest;
 use App\Http\Resources\EnterPortRequestResource;
+use App\Models\Pier;
 use App\Models\PortRequest;
 use App\Models\PortRequestItem;
+use App\Models\Rejection;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class EnterPortRequestController extends Controller
 {
+    use \App\Traits\Request;
 
     /**
      * EnterPortRequestController constructor.
@@ -32,7 +42,7 @@ class EnterPortRequestController extends Controller
     public function index()
     {
         $enterPortRequests = QueryBuilder::for(PortRequest::class)
-            ->allowedIncludes(['processType', 'payloadType', 'user'])
+            ->allowedIncludes(['processType', 'payloadType', 'user', 'portRequestItems'])
             ->allowedFilters(['ship_name', 'payload_weight', 'shipping_policy_number', 'status'])
             ->defaultSort('-id')
             ->paginate($this->perPage, ['*'], 'page', $this->page);
@@ -49,7 +59,8 @@ class EnterPortRequestController extends Controller
     {
         $data = $request->validated();
         $data['user_id'] = Auth::id();
-        $data['status'] = 0;
+        $data['status'] = DataBaseConstants::getStatusesArr()["IN_PROGRESS"];
+        $data['way'] = DataBaseConstants::getWaysArr()["FORWARD"];
         $enterPortRequest = PortRequest::create($data);
         $enterPortRequestItems = $request->get('enter_port_request_items');
         foreach ($enterPortRequestItems as $enterPortRequestItem) {
@@ -59,6 +70,9 @@ class EnterPortRequestController extends Controller
                 'enter_port_request_id' => $enterPortRequest->id,
             ]);
         }
+
+        $enterPortRequest->createPath();
+
         return $this->resource($enterPortRequest->load([
             'processType',
             'payloadType',
@@ -137,5 +151,147 @@ class EnterPortRequestController extends Controller
         $enterPortRequest->delete();
 
         return $this->success([], 'deleted Successfully');
+    }
+
+
+    private function checkIfCanMakeAction($request)
+    {
+
+        $userRecord = $request->path()->where('user_id', Auth::id())->first();
+
+        if ($userRecord->pivot->is_served != 0)
+            return false;
+
+        return true;
+    }
+
+    public function approve(ApproveEnterPortRequest $request, $id)
+    {
+
+        $enterPortRequest = PortRequest::find($id);
+
+        if (!$enterPortRequest)
+            return $this->error(404, Config::get('constants.errors.not_found'));
+
+        if (!$this->checkIfCanMakeAction($enterPortRequest))
+            return $this->error(401, Config::get('constants.errors.unauthorized'));
+
+        $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
+
+        $matchPier = Pier::find($this->chooseAvailablePier($enterPortRequest));
+        $this->attachPortPier($matchPier, $enterPortRequest, $request->validated());
+        $this->approveRequest(Auth::user());
+
+        return $this->resource($enterPortRequest->load([
+            'processType',
+            'payloadType',
+            'user',
+            'portRequestItems'
+        ]));
+    }
+
+    public function refuse(RefusePayloadRequestRequest $request, $id)
+    {
+
+        $enterPortRequest = PortRequest::find($id);
+
+        if (!$enterPortRequest)
+            return $this->error(404, Config::get('constants.errors.not_found'));
+
+        if (!$this->checkIfCanMakeAction($enterPortRequest))
+            return $this->error(401, Config::get('constants.errors.unauthorized'));
+
+        $data['reason'] = $request->reason;
+        $data['date'] = Carbon::now();
+        $data['rejectable_type'] = PortRequest::class;
+        $data['rejectable_id'] = $enterPortRequest->id;
+        $data['user_id'] = Auth::id();
+
+        $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
+
+        $user = User::find($enterPortRequest->user_id);
+
+        $this->refuseRequest(Auth::user(), $user, $data);
+
+        return $this->resource($enterPortRequest->load([
+            'processType',
+            'payloadType',
+            'user',
+            'portRequestItems'
+        ]));
+    }
+
+    public function cancel($id)
+    {
+
+        $enterPortRequest = PortRequest::find($id);
+
+        if (!$enterPortRequest)
+            return $this->error(404, Config::get('constants.errors.not_found'));
+
+        if (!$this->checkIfCanMakeAction($enterPortRequest))
+            return $this->error(401, Config::get('constants.errors.unauthorized'));
+
+        $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
+
+        $this->cancelRequest(Auth::user());
+
+        return $this->resource($enterPortRequest->load([
+            'processType',
+            'payloadType',
+            'user',
+            'portRequestItems'
+        ]));
+    }
+
+    private function scopeRequests($status, $isServed)
+    {
+
+        $requests = $this->getRequestsDependingOnStatus(
+            $status,
+            Auth::user()->enterPortRequests(),
+            $this->includes,
+            $this->filters,
+            $isServed,
+            $this->perPage,
+            $this->page
+        );
+
+        return $requests;
+    }
+
+    private function flushNotifications($requests, $status)
+    {
+
+        if ($requests)
+            foreach ($requests as $request) {
+                $this->setAsRead(Auth::id(), $request->id, $status, PortRequest::class);
+            }
+    }
+
+    private function chooseAvailablePier(PortRequest $enterPortRequest)
+    {
+        return $enterPortRequest->pickPier($enterPortRequest);
+    }
+
+    private function attachPortPier(Pier $pier, PortRequest $enterPortRequest, $dateDetails)
+    {
+        $model = DB::table('enter_port_pier')->where('pier_id', $pier->id)->orderByDesc('order')->first();
+        if (!$pier->enterPortRequests()->exists()) {
+            $pier->enterPortRequests()->attach($enterPortRequest->id, [
+                'order' => is_null($model) ? 1 : $model->order + 1,
+                'enter_date' => is_null($model) ? Carbon::now() : $model->leave_date,
+            ]);
+            return;
+        }
+
+        $getLastPierOrder = $pier->enterPortRequests()->latest('id')->first();
+
+        $pier->enterPortRequests()->attach($enterPortRequest->id, [
+            'order' => ++$getLastPierOrder->order,
+            'enter_date' => $dateDetails['enter_date'],
+            'leave_date' => $dateDetails['leave_date'],
+        ]);
+//dd(2);
     }
 }

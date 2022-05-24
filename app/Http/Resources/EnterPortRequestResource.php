@@ -30,6 +30,7 @@ class EnterPortRequestResource extends JsonResource
                 'payload_type' => $this->whenLoaded('payloadType'),
                 'user' => $this->whenLoaded('user'),
                 'port_request_items' => $this->whenLoaded('portRequestItems'),
+                'path'=>$this->path
             ];
     }
 }

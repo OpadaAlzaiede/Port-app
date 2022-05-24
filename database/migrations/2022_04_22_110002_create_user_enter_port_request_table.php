@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEnterPortPierTable extends Migration
+class CreateUserEnterPortRequestTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateEnterPortPierTable extends Migration
      */
     public function up()
     {
-        Schema::create('enter_port_pier', function (Blueprint $table) {
+        Schema::create('user_enter_port_request', function (Blueprint $table) {
             $table->id();
-            $table->integer('order');
-            $table->dateTime('enter_date');
-            $table->dateTime('leave_date')->nullable(true);
-            $table->unsignedBigInteger('enter_port_request_id');
-            $table->unsignedBigInteger('pier_id');
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('enter_port_request_id')->constrained('enter_port_requests');
+            $table->tinyInteger('is_served');
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ class CreateEnterPortPierTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('enter_port_pier');
+        Schema::dropIfExists('user_enter_port_request');
     }
 }

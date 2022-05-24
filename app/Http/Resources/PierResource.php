@@ -18,14 +18,16 @@ class PierResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'length' => $this->length,
             'draft' => $this->draft,
             'code' => $this->code,
             'type' => $this->type,
             'yards' => $this->yards,
-            'function' => $this->function,
+            'payload_type' => $this->payloadType,
             'status' => $this->status,
+            'enter_port_requests' => $this->enterPortRequests
         ];
     }
 }

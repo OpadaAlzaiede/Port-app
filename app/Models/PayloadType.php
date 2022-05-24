@@ -15,7 +15,8 @@ class PayloadType extends Model implements Auditable
     protected const TYPES = [
         1 => 'LIQUID',
         2 => 'SOLID',
-        3 => 'REFRIGERATED'
+        3 => 'REFRIGERATED',
+        4 => 'MIXED',
     ];
 
     public function payloadRequests()

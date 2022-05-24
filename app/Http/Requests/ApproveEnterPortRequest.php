@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Traits\JsonErrors;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateYardRequest extends FormRequest
+class ApproveEnterPortRequest extends FormRequest
 {
     use JsonErrors;
 
@@ -27,8 +27,7 @@ class UpdateYardRequest extends FormRequest
     public function rules()
     {
         return [
-            'size' => 'required|numeric',
-            'payload_type_id' => 'required|exists:payload_types,id',
+            'leave_date' => 'required|date'
         ];
     }
 }

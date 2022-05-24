@@ -13,7 +13,8 @@ class Rejection extends Model implements Auditable
     protected $guarded = ['id'];
 
     const MORPH = [
-        1 => PayloadRequest::class
+        1 => PayloadRequest::class,
+        2 => PortRequest::class
     ];
 
     public function rejectable()

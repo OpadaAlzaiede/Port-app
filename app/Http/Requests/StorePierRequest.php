@@ -32,7 +32,7 @@ class StorePierRequest extends FormRequest
             'draft' => 'required|numeric',
             'code' => 'required|string',
             'type' => 'required|in:1,2',
-            'function' => 'required|string',
+            'payload_type_id' => 'required|exists:payload_types,id',
             'status' => 'required|in:1,2'
         ];
     }
