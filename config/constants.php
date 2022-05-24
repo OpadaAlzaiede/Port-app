@@ -17,6 +17,8 @@ return [
         'merchant_role' => 'merchant',
         'captain_role' => 'captain',
         'admin_role' => 'admin',
-        'officer_role' => 'officer'
+        'pier_officer_role' => 'pier_officer',
+        'tugboat_officer_role' => 'tugboat_officer',
+        'yard_officer_role' => 'yard_officer'
     ]
 ];

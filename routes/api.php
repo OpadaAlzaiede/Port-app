@@ -46,7 +46,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/done', [PayloadRequestController::class, 'getDone']);
         Route::get('/canceled', [PayloadRequestController::class, 'getCanceled']);
 
-        Route::middleware('role:' . Config::get('constants.roles.officer_role'))->group(function () {
+        Route::middleware('role:' . Config::get('constants.roles.pier_officer_role'))->group(function () {
             Route::post('/{id}/approve', [PayloadRequestController::class, 'approve']);
             Route::post('/{id}/refuse', [PayloadRequestController::class, 'refuse']);
         });
@@ -65,10 +65,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::resource('/payload-types', PayloadTypeController::class)->only(['index', 'show']);
 
     // Officer Only Routes
-    Route::middleware('role:' . Config::get('constants.roles.officer_role'))->group(function () {
-        Route::resource('/piers', PierController::class);
-        Route::resource('/tugboats', TugboatController::class);
+
+    Route::middleware('role:'. Config::get('constants.roles.yard_officer_role'))->group(function() {
         Route::resource('/yards', YardController::class);
+    });
+    Route::middleware('role:'. Config::get('constants.roles.tugboat_officer_role'))->group(function() {
+        Route::resource('/tugboats', TugboatController::class);
+    });
+
+    Route::middleware('role:' . Config::get('constants.roles.pier_officer_role'))->group(function () {
+        Route::resource('/piers', PierController::class);
         Route::post('/pier/distance-from-yards', [PierController::class, 'addDistanceBetweenPierAndYards']);
         Route::resource('/process-types', ProcessTypeController::class)->except(['index', 'show']);
         Route::resource('/payload-types', PayloadTypeController::class)->except(['index', 'show']);

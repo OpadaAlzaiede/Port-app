@@ -27,7 +27,9 @@ class DatabaseSeeder extends Seeder
         $merchantRole = Role::create(['name' => Config::get('constants.roles.merchant_role')]);
         $captainRole = Role::create(['name' => Config::get('constants.roles.captain_role')]);
         $adminRole = Role::create(['name' => Config::get('constants.roles.admin_role')]);
-        $officerRole = Role::create(['name' => Config::get('constants.roles.officer_role')]);
+        $pierOfficerRole = Role::create(['name' => Config::get('constants.roles.pier_officer_role')]);
+        $tugBoatOfficerRole = Role::create(['name' => Config::get('constants.roles.tugboat_officer_role')]);
+        $yardOfficerRole = Role::create(['name' => Config::get('constants.roles.yard_officer_role')]);
 
         for ($i = 1; $i < 6; $i++) {
             
@@ -39,7 +41,9 @@ class DatabaseSeeder extends Seeder
                 'username' => 'captain' . $i
             ])->assignRole($captainRole);
 
-            User::factory()->create(['username' => 'officer' . $i])->assignRole($officerRole);
+            User::factory()->create(['username' => 'pier_officer' . $i])->assignRole($pierOfficerRole);
+            User::factory()->create(['username' => 'yard_officer' . $i])->assignRole($yardOfficerRole);
+            User::factory()->create(['username' => 'tugboat_officer' . $i])->assignRole($tugBoatOfficerRole);
         }
 
 

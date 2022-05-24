@@ -25,10 +25,7 @@ class DataBaseConstants
     const IS_SERVED_YES = 1;
     const IS_SERVED_NO = 0;
 
-    //ROLES
-    const MERCHANT_ROLE = 'user';
-    const ADMIN_ROLE = 'admin';
-    const OFFICER_ROLE = 'officer';
+    
 
     //payload types
     const FIRST = 1;
