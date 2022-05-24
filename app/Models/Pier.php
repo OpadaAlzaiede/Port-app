@@ -82,7 +82,6 @@ class Pier extends Model
 
     public static function getMinimumLoadingPiers($piers)
     {
-        $piers = $piers->get();
         $descLoadingPiers = [];
 
         foreach ($piers as $pier) {

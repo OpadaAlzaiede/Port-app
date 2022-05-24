@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class EnterPortRequestController extends Controller
@@ -177,8 +178,8 @@ class EnterPortRequestController extends Controller
 
         $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
 
-
-        $this->attachPortPier($this->chooseAvailablePier($enterPortRequest), $enterPortRequest, $request->validated());
+        $matchPier = Pier::find($this->chooseAvailablePier($enterPortRequest));
+        $this->attachPortPier($matchPier, $enterPortRequest, $request->validated());
         $this->approveRequest(Auth::user());
 
         return $this->resource($enterPortRequest->load([
@@ -270,17 +271,16 @@ class EnterPortRequestController extends Controller
 
     private function chooseAvailablePier(PortRequest $enterPortRequest)
     {
-        dd($enterPortRequest->pickPier($enterPortRequest));
-        return $enterPortRequest->pickPier($enterPortRequest->ship_draft_length);
+        return $enterPortRequest->pickPier($enterPortRequest);
     }
 
     private function attachPortPier(Pier $pier, PortRequest $enterPortRequest, $dateDetails)
     {
+        $model = DB::table('enter_port_pier')->where('pier_id', $pier->id)->orderByDesc('order')->first();
         if (!$pier->enterPortRequests()->exists()) {
             $pier->enterPortRequests()->attach($enterPortRequest->id, [
-                'order' => 1,
-                'enter_date' => $dateDetails['enter_date'],
-                'leave_date' => $dateDetails['leave_date'],
+                'order' => is_null($model) ? 1 : $model->order + 1,
+                'enter_date' => is_null($model) ? Carbon::now() : $model->leave_date,
             ]);
             return;
         }

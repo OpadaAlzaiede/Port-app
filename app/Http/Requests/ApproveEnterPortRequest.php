@@ -27,7 +27,6 @@ class ApproveEnterPortRequest extends FormRequest
     public function rules()
     {
         return [
-            'enter_date' => 'required|date',
             'leave_date' => 'required|date'
         ];
     }
