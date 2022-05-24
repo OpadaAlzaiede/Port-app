@@ -82,12 +82,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     // Admin only Routes
-    Route::middleware('role:' . Config::get('constants.roles.admin_role'))->group(function () {
-        Route::prefix('/admin')->group(function () {
-            Route::get('/notifications', [AdminController::class, 'getNotifications']);
-            Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
-            Route::get('/get-audits', [AuditController::class, 'getAudits']);
-        });
+    Route::middleware('role:' . Config::get('constants.roles.admin_role') . '|'
+                              . Config::get('constants.roles.pier_officer_role')
+                              . '|' . Config::get('constants.roles.tugboat_officer_role')
+                              . '|' . Config::get('constants.roles.yard_officer_role'))
+        ->group(function () {
+            Route::prefix('/admin')->group(function () {
+                Route::get('/notifications', [AdminController::class, 'getNotifications']);
+                Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
+                Route::get('/get-audits', [AuditController::class, 'getAudits']);
+            });
     });
 
 
