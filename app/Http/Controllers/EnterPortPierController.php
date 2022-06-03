@@ -56,8 +56,9 @@ class EnterPortPierController extends Controller
             foreach ($pierPorts as $pierPort) {
                 $enter_date = Carbon::parse($pierPort->enter_date);
                 $leave_date = Carbon::parse($pierPort->leave_date);
-                $enter_date->addHours(-$differenceInHours);
-                $leave_date->addHours(-$differenceInHours);
+                $pierPort->enter_date = $enter_date->addHours(-$differenceInHours);
+                $pierPort->leave_date = $leave_date->addHours(-$differenceInHours);
+                $pierPort->save();
             }
         }
 
@@ -66,8 +67,9 @@ class EnterPortPierController extends Controller
             foreach ($pierPorts as $pierPort) {
                 $enter_date = Carbon::parse($pierPort->enter_date);
                 $leave_date = Carbon::parse($pierPort->leave_date);
-                $enter_date->addMinutes(-$differenceInHours);
-                $leave_date->addMinutes(-$differenceInHours);
+                $pierPort->enter_date = $enter_date->addMinutes(-$differenceInHours);
+                $pierPort->leave_date = $leave_date->addMinutes(-$differenceInHours);
+                $pierPort->save();
             }
         }
         return $this->resource($enterPortPierObjectResource);
