@@ -66,20 +66,26 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Officer Only Routes
 
     Route::middleware('role:' . Config::get('constants.roles.yard_officer_role'))->group(function () {
-        Route::resource('/yards', YardController::class);
+        Route::resource('/yards', YardController::class)->only(['store', 'update', 'destroy']);
     });
     Route::middleware('role:' . Config::get('constants.roles.tugboat_officer_role'))->group(function () {
-        Route::resource('/tugboats', TugboatController::class);
+        Route::resource('/tugboats', TugboatController::class)->only(['store', 'update', 'destroy']);
     });
 
     Route::middleware('role:' . Config::get('constants.roles.pier_officer_role'))->group(function () {
-        Route::resource('/piers', PierController::class);
+        Route::resource('/piers', PierController::class)->only(['store', 'update', 'destroy']);
         Route::post('/pier/distance-from-yards', [PierController::class, 'addDistanceBetweenPierAndYards']);
         Route::post('/yard/distance-from-piers', [YardController::class, 'addDistanceBetweenYardsAndPier']);
         Route::resource('/process-types', ProcessTypeController::class)->except(['index', 'show']);
         Route::resource('/payload-types', PayloadTypeController::class)->except(['index', 'show']);
         Route::resource('/pier-yard', PierYardController::class)->except(['store', 'show']);
     });
+    Route::resource('/yards', YardController::class)->only(['index', 'show']);
+    Route::resource('/tugboats', TugboatController::class)->only(['index', 'show']);
+    Route::resource('/piers', PierController::class)->only(['index', 'show']);
+
+
+
 
     // Admin only Routes
     Route::middleware('role:' . Config::get('constants.roles.admin_role') . '|'
