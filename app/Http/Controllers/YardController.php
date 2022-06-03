@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreYardPierRequest;
 use App\Http\Requests\StoreYardRequest;
 use App\Http\Requests\UpdateYardRequest;
 use App\Http\Resources\YardResource;
@@ -10,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class YardController extends Controller
@@ -99,5 +101,26 @@ class YardController extends Controller
         $yard->delete();
 
         return $this->success([], Config::get('constants.success.delete'));
+    }
+
+
+    public function addDistanceBetweenYardsAndPier(StoreYardPierRequest $request)
+    {
+        $yard = Yard::find($request->get('yard_id'));
+        $piers = $request->get('piers');
+        foreach ($piers as $pier) {
+
+            if (DB::table('pier_yard')
+                ->where('yard_id', '=', $yard->id)
+                ->where('pier_id', '=', $pier['id'])->exists()) {
+                continue;
+            }
+
+            $yard->piers()->attach($yard->id, [
+                'pier_id' => $pier['id'],
+                'distance' => $pier['distance']
+            ]);
+        }
+        return $this->resource($yard->load('piers'));
     }
 }

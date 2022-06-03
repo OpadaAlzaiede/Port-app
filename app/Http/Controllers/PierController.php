@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PierController extends Controller
@@ -110,6 +111,11 @@ class PierController extends Controller
         $pier = Pier::find($request->get('pier_id'));
         $yards = $request->get('yards');
         foreach ($yards as $yard) {
+            if (DB::table('pier_yard')
+                ->where('yard_id', '=', $yard['id'])
+                ->where('pier_id', '=', $pier->id)->exists()) {
+                continue;
+            }
             $pier->yards()->attach($pier->id, [
                 'yard_id' => $yard['id'],
                 'distance' => $yard['distance']
