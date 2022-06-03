@@ -49,6 +49,38 @@ class AdminController extends Controller
         $data['empty_piers'] = $emptyPiers;
         $data['empty_tugboats'] = $emptyTugboats;
 
+        /**
+         *
+         */
+        $piers = Pier::all();
+        $piersArray = array();
+        foreach ($piers as $pier) {
+            $pierDetails = array();
+            $countOfServedShips = $pier->enterPortPiers()->where('order', '<', 0)->get()->count();
+            $countOfUnServedShips = $pier->enterPortPiers()->where('order', '>', 0)->get()->count();
+            $pierDetails['number_of_served_ship'] = $countOfServedShips;
+            $pierDetails['number_of_un_served_ship'] = $countOfUnServedShips;
+            $enterPortPiers = $pier->enterPortPiers()->get();
+            $countOfLoading = 0;
+            $countOfUnLoading = 0;
+            $countOfUnLoadingAndLoading = 0;
+            foreach ($enterPortPiers as $enterPortPier) {
+                if ($enterPortPier->PortRequest->process_type_id === 1) {
+                    ++$countOfLoading;
+                }
+                if ($enterPortPier->PortRequest->process_type_id === 2) {
+                    ++$countOfUnLoading;
+                }
+                if ($enterPortPier->PortRequest->process_type_id === 3) {
+                    ++$countOfUnLoadingAndLoading;
+                }
+            }
+            $pierDetails['number_of_loading_operation'] = $countOfLoading;
+            $pierDetails['number_of_un_loading_operation'] = $countOfUnLoading;
+            $pierDetails['number_of_loading_and_unloading_operation'] = $countOfUnLoadingAndLoading;
+            $piersArray[$pier->name] = $pierDetails;
+        }
+        $data ['piers'] = $piersArray;
         return $data;
     }
 }
