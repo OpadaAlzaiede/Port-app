@@ -22,8 +22,12 @@ class EnterPortPierResource extends JsonResource
                 'order' => $this->order,
                 'enter_date' => $this->enter_date,
                 'leave_date' => $this->leave_date,
-                'enter_port_request' => $this->PortRequest,
-                'pier' => $this->pier,
+                'enter_port_request' => new EnterPortRequestResource($this->PortRequest->load([
+                    'processType',
+                    'payloadType',
+                    'portRequestItems'
+                ])),
+                'pier' => new PierResource($this->pier),
             ];
     }
 }
