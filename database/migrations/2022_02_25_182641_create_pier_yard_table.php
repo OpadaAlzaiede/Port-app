@@ -17,7 +17,7 @@ class CreatePierYardTable extends Migration
             $table->id();
             $table->unsignedBigInteger('pier_id');
             $table->unsignedBigInteger('yard_id');
-            $table->double('distance');
+            $table->string('distance');
             $table->softDeletes();
             $table->timestamps();
         });
