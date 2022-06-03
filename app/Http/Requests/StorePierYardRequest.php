@@ -31,7 +31,7 @@ class StorePierYardRequest extends FormRequest
                 'pier_id' => ['required', 'integer', Rule::exists('piers', 'id')],
                 'yards' => ['required', 'array'],
                 'yards.*.id' => ['required', 'integer', Rule::exists('yards', 'id')],
-                'yards.*.distance' => ['required', 'string']
+                'yards.*.distance' => ['required', 'numeric']
             ];
     }
 }
