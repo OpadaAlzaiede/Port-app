@@ -62,15 +62,15 @@ class PortRequest extends Model implements Auditable
     public function pickPier($enterPortRequest)
     {
         $availablePiers = Pier::getInServicePiers();
-        $pierWithAppropriateLength = Pier::scopeLength($availablePiers, $enterPortRequest->ship_draft_length);
+        $pierWithAppropriateLength = Pier::scopeLength($availablePiers, $enterPortRequest);;
         $piers = Pier::matchPayloadType($pierWithAppropriateLength, $enterPortRequest->payload_type_id)->get();
-
         $result = Pier::getMinimumLoadingPiers($piers);
 
 
         foreach ($piers as $pier)
             if (!$pier->enterPortPiers()->exists())
                 return $pier;
+
 
         if ($enterPortRequest->payload_type_id == DataBaseConstants::FOURTH) {
             return array_key_first($result);
