@@ -17,6 +17,7 @@ use App\Traits\Request as CustomRequest;
 use App\Http\Resources\PayloadRequestResource;
 use App\Http\Requests\StorePayloadRequestRequest;
 use App\Http\Requests\UpdatePayloadRequestRequest;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class PayloadRequestController extends Controller
 {
@@ -36,9 +37,10 @@ class PayloadRequestController extends Controller
      */
     public function index()
     {
+
         $payloadRequests = QueryBuilder::for(PayloadRequest::class)
                                        ->allowedIncludes($this->includes)
-                                       ->allowedFilters(['id'])
+                                       ->allowedFilters(['id', AllowedFilter::exact('shipping_policy_number')])
                                        ->defaultSort('-id')
                                        ->paginate($this->perPage, ['*'], 'page', $this->page);
 
