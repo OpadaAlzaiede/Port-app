@@ -26,12 +26,21 @@ class Yard extends Model implements Auditable
 
     public static function getYardByPayloadTypeId($payloadTypeId)
     {
-        return self::where('payload_type_id', $payloadTypeId);
+        return self::where('payload_type_id', $payloadTypeId)->where('status', 1);
     }
 
     public static function getYardByPierIdAndMatchYards($matchYards, $pierId)
     {
         return DB::table('pier_yard')->where('pier_id', $pierId)->whereIn('yard_id', $matchYards)
             ->orderBy('distance', 'asc')->first();
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function ($model) {
+            $model->status = 0;
+        });
     }
 }

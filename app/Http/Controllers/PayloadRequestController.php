@@ -111,7 +111,7 @@ class PayloadRequestController extends Controller
         }
         $this->setRequest(PayloadRequest::class, $requestObject, Rejection::class);
 
-        $officer = User::getUserByRoleName(Config::get('constants.roles.officer_role'));
+        $officer = User::getUserByRoleName(Config::get('constants.roles.pier_officer_role'));
 
         $this->reProcessRequest(Auth::user(), $officer, $request->all());
 
@@ -132,9 +132,9 @@ class PayloadRequestController extends Controller
             return $this->error(404, Config::get('constants.errors.not_found'));
 
         $payloadRequest->payloadRequestItems()->delete();
-        
+
         $payloadRequest->delete();
-        
+
         return $this->success([], Config::get('constants.success.delete'));
     }
 
@@ -205,7 +205,7 @@ class PayloadRequestController extends Controller
         $this->refuseRequest(Auth::user(), $user, $data);
 
         return $this->resource($payloadRequest->load($this->includes));
-    } 
+    }
 
     public function cancel($id) {
 

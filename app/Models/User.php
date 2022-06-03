@@ -58,7 +58,7 @@ class User extends Authenticatable implements Auditable
     public static function getLessLoadOfficer()
     {
 
-        $officers = self::role(Config::get('constants.roles.officer_role'))->get();
+        $officers = self::role(Config::get('constants.roles.pier_officer_role'))->get();
 
         $lessLoadOfficer = $officers[0];
         $lessLoad = $lessLoadOfficer->payloadRequests()->where('is_served', 0)->count();

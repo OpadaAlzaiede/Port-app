@@ -11,12 +11,16 @@ class RoleController extends Controller
     public function getRoles() {
 
         $adminRole = Config::get('constants.roles.admin_role');
-        $officerRole = Config::get('constants.roles.officer_role');
+        $pierOfficerRole = Config::get('constants.roles.pier_officer_role');
+        $tugboatOfficerRole = Config::get('constants.roles.tugboat_officer_role');
+        $yardOfficerRole = Config::get('constants.roles.yard_officer_role');
 
         $adminRoleId = Role::where('name', $adminRole)->first()->id;
-        $officerRoleId = Role::where('name', $officerRole)->first()->id;
-        
-        $systemRoles = [$adminRoleId, $officerRoleId];
+        $pierOfficerRole = Role::where('name', $pierOfficerRole)->first()->id;
+        $tugboatOfficerRoleId = Role::where('name', $tugboatOfficerRole)->first()->id;
+        $yardOfficerRoleId = Role::where('name', $yardOfficerRole)->first()->id;
+
+        $systemRoles = [$adminRoleId, $pierOfficerRole, $tugboatOfficerRoleId, $yardOfficerRoleId];
 
         $roles = Role::whereNotIn('id', $systemRoles)->get();
 

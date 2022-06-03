@@ -65,9 +65,9 @@ class Pier extends Model
         return $this->status === DataBaseConstants::getPierStatusArr()["IN_SERVICE"];
     }
 
-    public static function scopeLength($piers, $length)
+    public static function scopeLength($piers, $enterPortRequest)
     {
-        return $piers->where('length', '>=', $length);
+        return $piers->where('draft', '>=', $enterPortRequest->ship_draft_length)->where('length', '>=', 0.1 * $enterPortRequest->ship_length);
     }
 
     public static function matchPayloadType($piers, $type)

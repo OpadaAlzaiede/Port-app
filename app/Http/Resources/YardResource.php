@@ -18,9 +18,13 @@ class YardResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'name' => $this->name,
+            'code' => $this->code,
             'size' => $this->size,
             'payload_type' => $this->payloadType,
-            'pier' => $this->whenLoaded('piers')
+            'pier' => $this->whenLoaded('piers'),
+            'capacity' => $this->capacity,
+            'status' => $this->status
         ];
     }
 }

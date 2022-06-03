@@ -292,6 +292,6 @@ class EnterPortRequestController extends Controller
             'enter_date' => $dateDetails['enter_date'],
             'leave_date' => $dateDetails['leave_date'],
         ]);
-//dd(2);
+
     }
 }

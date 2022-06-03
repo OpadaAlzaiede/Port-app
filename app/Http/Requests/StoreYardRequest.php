@@ -27,7 +27,10 @@ class StoreYardRequest extends FormRequest
     public function rules()
     {
         return [
-            'size' => 'required|numeric',
+            'name'=>'required|string',
+            'code'=>'required|string',
+            'size' => 'required|string',
+            'capacity' => 'required|integer',
             'payload_type_id' => 'required|exists:payload_types,id',
         ];
     }
