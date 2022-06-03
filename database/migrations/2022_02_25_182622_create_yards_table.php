@@ -15,8 +15,12 @@ class CreateYardsTable extends Migration
     {
         Schema::create('yards', function (Blueprint $table) {
             $table->id();
-            $table->double('size');
+            $table->string('name');
+            $table->string('code');
+            $table->string('size');
+            $table->unsignedBigInteger('capacity');
             $table->unsignedBigInteger('payload_type_id');
+            $table->tinyInteger('status'); //  0 => outOfService ; 1 otherwise
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });

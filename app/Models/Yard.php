@@ -34,4 +34,13 @@ class Yard extends Model implements Auditable
         return DB::table('pier_yard')->where('pier_id', $pierId)->whereIn('yard_id', $matchYards)
             ->orderBy('distance', 'asc')->first();
     }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function ($model) {
+            $model->status = 0;
+        });
+    }
 }

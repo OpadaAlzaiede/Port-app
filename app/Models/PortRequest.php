@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class PortRequest extends Model implements Auditable
@@ -48,7 +49,7 @@ class PortRequest extends Model implements Auditable
         $this->path()->attach(Auth::id(), [
             'is_served' => 1,
         ]);
-        $officer = User::getUserByRoleName(DataBaseConstants::OFFICER_ROLE);
+        $officer = User::getUserByRoleName(Config::get('constants.roles.pier_officer_role'));
         $this->path()->attach([
             $officer->id => [
                 'is_served' => 0,
@@ -104,10 +105,7 @@ class PortRequest extends Model implements Auditable
                     $secondPier = Yard::getYardByPierIdAndMatchYards($yards, $secondPierId);
 
                     $firstPier->distance < $secondPier->distance ? $firstPier->pier_id : $secondPier->pier_id;
-//                    if ($firstPier->distance < $secondPier->distance) {
-//                        return $firstPier->pier_id;
-//                    }
-//                    return $secondPier->pier_id;
+
                 }
             }
 

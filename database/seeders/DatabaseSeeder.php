@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         $yardOfficerRole = Role::create(['name' => Config::get('constants.roles.yard_officer_role')]);
 
         for ($i = 1; $i < 6; $i++) {
-            
+
             User::factory()->create([
                 'username' => 'merchant' . $i
             ])->assignRole($merchantRole);
@@ -132,6 +132,9 @@ class DatabaseSeeder extends Seeder
             Yard::create([
                 'size' => mt_rand(1, 3000),
                 'payload_type_id' => rand(1, 4),
+                'name' => rand(1, 4),
+                'code' => rand(1, 4),
+                'capacity' => rand(1, 4),
             ]);
         }
     }
