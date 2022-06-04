@@ -20,6 +20,7 @@ class CreateEnterPortPierTable extends Migration
             $table->dateTime('leave_date')->nullable(true);
             $table->unsignedBigInteger('enter_port_request_id');
             $table->unsignedBigInteger('pier_id');
+            $table->unsignedBigInteger('yard_id');
             $table->timestamps();
         });
     }

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\EnterPortPierResource;
+use App\Models\PayloadType;
 use App\Models\Pier;
 use App\Models\PortPier;
+use App\Models\PortRequest;
+use App\Models\Yard;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -71,6 +74,19 @@ class EnterPortPierController extends Controller
                 $pierPort->leave_date = $leave_date->addMinutes(-$differenceInHours);
                 $pierPort->save();
             }
+        }
+        /**
+         * to min or max the current capacity of yard
+         */
+        $toKnowPayloadType = $enterPortPierObjectResource->PortRequest()->first();
+        $enterPortRequest = PortRequest::find($toKnowPayloadType->id);
+        $enterPortRequestItem = $enterPortRequest->portRequestItems()->get()->count('amount');
+        $payloadType = PayloadType::find($toKnowPayloadType->payload_type_id);
+        $yard = Yard::find($enterPortPierObjectResource->yard_id);
+        if ($payloadType->id === 1) {
+            $yard->current_capacity -= $enterPortRequestItem;
+        } else {
+            $yard->current_capacity += $enterPortRequestItem;
         }
         return $this->resource($enterPortPierObjectResource);
     }

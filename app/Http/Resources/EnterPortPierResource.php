@@ -28,6 +28,7 @@ class EnterPortPierResource extends JsonResource
                     'portRequestItems'
                 ])),
                 'pier' => new PierResource($this->pier),
+                'yard' => $this->yard
             ];
     }
 }
