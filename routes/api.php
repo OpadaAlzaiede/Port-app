@@ -103,5 +103,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::resource('/enter-port-requests', EnterPortRequestController::class);
+//    Route::resource('/enter-port-requests', EnterPortRequestController::class);
 });

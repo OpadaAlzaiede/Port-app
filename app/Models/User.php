@@ -52,7 +52,7 @@ class User extends Authenticatable implements Auditable
 
     public function enterPortRequests()
     {
-        return $this->belongsToMany(PortRequest::class, 'enter_port_request')->withPivot('is_served');
+        return $this->belongsToMany(PortRequest::class, 'user_enter_port_request','user_id','enter_port_request_id')->withPivot('is_served');
     }
 
     public static function getLessLoadOfficer()
