@@ -26,6 +26,10 @@ class EnterPortRequestController extends Controller
 {
     use \App\Traits\Request;
 
+    private $includes = ['processType', 'payloadType', 'user', 'portRequestItems'];
+    private $filters = ['id'];
+
+
     /**
      * EnterPortRequestController constructor.
      * @param Request $request
@@ -293,5 +297,37 @@ class EnterPortRequestController extends Controller
             'leave_date' => $dateDetails['leave_date'],
         ]);
 
+    }
+
+    public function getPending()
+    {
+
+        $pending = $this->scopeRequests(DataBaseConstants::getStatusesArr()['IN_PROGRESS'], 0);
+        $this->flushNotifications($pending, 0);
+        return $this->collection($pending);
+    }
+
+    public function getInProgress()
+    {
+
+        $inProgress = $this->scopeRequests(DataBaseConstants::getStatusesArr()['IN_PROGRESS'], 1);
+        $this->flushNotifications($inProgress, 1);
+        return $this->collection($inProgress);
+    }
+
+    public function getDone()
+    {
+
+        $done = $this->scopeRequests(DataBaseConstants::getStatusesArr()['DONE'], 1);
+        $this->flushNotifications($done, 2);
+        return $this->collection($done);
+    }
+
+    public function getCanceled()
+    {
+
+        $canceled = $this->scopeRequests(DataBaseConstants::getStatusesArr()['CANCELED'], 1);
+        $this->flushNotifications($canceled, 3);
+        return $this->collection($canceled);
     }
 }

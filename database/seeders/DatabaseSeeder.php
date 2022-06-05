@@ -57,6 +57,7 @@ class DatabaseSeeder extends Seeder
                 'enter_date' => Carbon::now(),
                 'leave_date' => Carbon::now()->addDays(1),
                 'enter_port_request_id' => $i++,
+                'yard_id' => rand(1,3),
                 'pier_id' => $pier->id]);
 
 //            PortRequest::create([
