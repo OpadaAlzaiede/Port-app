@@ -85,8 +85,16 @@ class EnterPortPierController extends Controller
         $yard = Yard::find($enterPortPierObjectResource->yard_id);
         if ($payloadType->id === 1) {
             $yard->current_capacity -= $enterPortRequestItem;
+            if ($yard->status === 0) {
+                $yard->staus = 1;
+                $yard->save();
+            }
         } else {
             $yard->current_capacity += $enterPortRequestItem;
+            if ($yard->capacity - $yard->current_capacity < 2) {
+                $yard->staus = 0;
+                $yard->save();
+            }
         }
         return $this->resource($enterPortPierObjectResource);
     }
