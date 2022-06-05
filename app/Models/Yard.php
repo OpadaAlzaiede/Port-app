@@ -26,13 +26,62 @@ class Yard extends Model implements Auditable
 
     public static function getYardByPayloadTypeId($payloadTypeId)
     {
-        return self::where('payload_type_id', $payloadTypeId)->where('status', 1);
+        return self::where('payload_type_id', $payloadTypeId);
     }
 
     public static function getYardByPierIdAndMatchYards($matchYards, $pierId)
     {
         return DB::table('pier_yard')->where('pier_id', $pierId)->whereIn('yard_id', $matchYards)
-            ->orderBy('distance', 'asc')->first();
+            ->orderBy('distance', 'asc')->get();
+    }
+
+    public function getInServiceYards($yards)
+    {
+        return $yards->where('status', 1);
+    }
+
+    public function scopeYardByCapacity($yards, $amount)
+    {
+
+        return $yards->where(function ($q) use ($amount) {
+
+            $currentCapacity = $q->current_capacity;
+            $capacity = $q->capacity;
+            if ($capacity - $currentCapacity > $amount)
+                return $q;
+
+            return;
+        });
+
+
+    }
+
+    public function getAppropriateYardByPierId($pierId, PortRequest $enterPortRequest)
+    {
+        $amount = $enterPortRequest->portRequestItems()->sum('amount');
+        $appropriateYards = self::getYardByPayloadTypeId($enterPortRequest->payload_type_id);
+
+
+        if ($enterPortRequest->process_type_id == 2)
+            $appropriateYards = $this->scopeYardByCapacity($appropriateYards, $amount);
+        else
+            $appropriateYards = $this->getInServiceYards($appropriateYards);
+
+
+        return self::getYardByPierIdAndMatchYards($appropriateYards->get(), $pierId);
+
+    }
+
+    public function changeCapacity(PortRequest $enterPortRequest)
+    {
+        $amount = $enterPortRequest->portRequestItems()->sum('amount');
+        if ($enterPortRequest->process_type_id == 2) {
+            $this->current_capacity = $this->current_capacity + $amount;
+            return $this->save();
+        }
+        $this->current_capacity = $this->current_capacity - $amount;
+        return $this->save();
+
     }
 
     public static function boot()

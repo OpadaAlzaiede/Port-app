@@ -13,6 +13,7 @@ use App\Models\PortRequest;
 use App\Models\PortRequestItem;
 use App\Models\Rejection;
 use App\Models\User;
+use App\Models\Yard;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -183,8 +184,19 @@ class EnterPortRequestController extends Controller
         $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
 
         $matchPier = Pier::find($this->chooseAvailablePier($enterPortRequest));
-        $this->attachPortPier($matchPier, $enterPortRequest, $request->validated());
+        if (!$matchPier)
+            return $this->error(301, "couldn't found appropriate pier !");
+        $matchYard = new Yard();
+        $yardResult = $matchYard->getAppropriateYardByPierId($matchPier, $enterPortRequest)->first();
+
+        if (!$yardResult)
+            return $this->error(301, "couldn't found appropriate yard !");
+
+        $this->attachPortPier($matchPier, $matchYard, $enterPortRequest, $request->validated());
         $this->approveRequest(Auth::user());
+
+        $yard = Yard::find($yardResult);
+        $yard->changeCapacity($enterPortRequest);
 
         return $this->resource($enterPortRequest->load([
             'processType',
@@ -278,23 +290,25 @@ class EnterPortRequestController extends Controller
         return $enterPortRequest->pickPier($enterPortRequest);
     }
 
-    private function attachPortPier(Pier $pier, PortRequest $enterPortRequest, $dateDetails)
+    private function attachPortPier(Pier $pier, $matchYard, PortRequest $enterPortRequest, $dateDetails)
     {
         $model = DB::table('enter_port_pier')->where('pier_id', $pier->id)->orderByDesc('order')->first();
         if (!$pier->enterPortRequests()->exists()) {
             $pier->enterPortRequests()->attach($enterPortRequest->id, [
                 'order' => is_null($model) ? 1 : $model->order + 1,
                 'enter_date' => is_null($model) ? Carbon::now() : $model->leave_date,
+                'yard_id', $matchYard
             ]);
             return;
         }
-
         $getLastPierOrder = $pier->enterPortRequests()->latest('id')->first();
 
+
         $pier->enterPortRequests()->attach($enterPortRequest->id, [
-            'order' => ++$getLastPierOrder->order,
-            'enter_date' => $dateDetails['enter_date'],
+            'order' => ++$getLastPierOrder->pivot->order,
+            'enter_date' => $getLastPierOrder->pivot->leave_date,
             'leave_date' => $dateDetails['leave_date'],
+            'yard_id' => $matchYard
         ]);
 
     }

@@ -64,6 +64,7 @@ class PortRequest extends Model implements Auditable
         $availablePiers = Pier::getInServicePiers();
         $pierWithAppropriateLength = Pier::scopeLength($availablePiers, $enterPortRequest);;
         $piers = Pier::matchPayloadType($pierWithAppropriateLength, $enterPortRequest->payload_type_id)->get();
+
         $result = Pier::getMinimumLoadingPiers($piers);
 
 
@@ -77,8 +78,6 @@ class PortRequest extends Model implements Auditable
         } else {
 
             if (count($result) > 1) {
-
-                $yards = Yard::getYardByPayloadTypeId($enterPortRequest->payload_type_id)->get('id')->toArray();
 
                 $i = 0;
                 foreach ($result as $key => $value) {
@@ -100,12 +99,6 @@ class PortRequest extends Model implements Auditable
                     if (Carbon::parse($s)->toDateTimeString() == $secondPierLeaveDate)
                         return $secondPierId;
                     return $firstPierId;
-                } else {
-                    $firstPier = Yard::getYardByPierIdAndMatchYards($yards, $firstPierId);
-                    $secondPier = Yard::getYardByPierIdAndMatchYards($yards, $secondPierId);
-
-                    $firstPier->distance < $secondPier->distance ? $firstPier->pier_id : $secondPier->pier_id;
-
                 }
             }
 
