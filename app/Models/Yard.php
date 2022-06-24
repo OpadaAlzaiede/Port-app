@@ -89,7 +89,7 @@ class Yard extends Model implements Auditable
         parent::boot();
 
         self::creating(function ($model) {
-            $model->status = 0;
+            $model->status = 1;
         });
     }
 }
