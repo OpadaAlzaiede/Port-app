@@ -115,6 +115,7 @@ class EnterPortRequestController extends Controller
     public function update(UpdateEnterPortRequestRequest $request, $id)
     {
         $enterPortRequest = PortRequest::find($id);
+        $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
         if (!$enterPortRequest) {
             $this->error('401', 'NOT FOUND');
         }
@@ -132,6 +133,8 @@ class EnterPortRequestController extends Controller
                 ]);
             }
         }
+        $officer = User::getUserByRoleName(Config::get('constants.roles.pier_officer_role'));
+        $this->reProcessRequest(Auth::user(), $officer, $request->validated());
         $enterPortRequest->update($request->validated());
         return $this->resource($enterPortRequest->load([
             'processType',
