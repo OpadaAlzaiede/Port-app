@@ -185,7 +185,6 @@ class EnterPortRequestController extends Controller
             return $this->error(401, Config::get('constants.errors.unauthorized'));
 
         $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
-
         $matchPier = Pier::find($this->chooseAvailablePier($enterPortRequest));
 
         if (!$matchPier)
@@ -193,7 +192,6 @@ class EnterPortRequestController extends Controller
 
         $matchYard = new Yard();
         $yardResult = $matchYard->getAppropriateYardByPierId($matchPier, $enterPortRequest)->first();
-
         if (!$yardResult)
             return $this->error(301, "couldn't found appropriate yard !");
 
@@ -325,7 +323,6 @@ class EnterPortRequestController extends Controller
             'leave_date' => $leaveDate->addHours($dateDetails['leave_date']),
             'yard_id' => $matchYardId
         ]);
-
     }
 
     public function getPending()
