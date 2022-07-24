@@ -191,18 +191,18 @@ class EnterPortRequestController extends Controller
             return $this->error(301, "couldn't found appropriate pier !");
 
         $matchYard = new Yard();
+
         $yardResult = $matchYard->getAppropriateYardByPierId($matchPier, $enterPortRequest)->first();
+
         if (!$yardResult)
             return $this->error(301, "couldn't found appropriate yard !");
 
-
-        $this->attachPortPier($matchPier, $yardResult->id, $enterPortRequest, $request->validated());
+        $this->attachPortPier($matchPier, $yardResult->yard_id, $enterPortRequest, $request->validated());
 
         $this->approveRequest(Auth::user());
 
 
-        $yard = Yard::find($yardResult->id);
-
+        $yard = Yard::find($yardResult->yard_id);
 
         $yard->changeCapacity($enterPortRequest);
 
