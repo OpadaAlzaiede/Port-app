@@ -50,6 +50,7 @@ class EnterPortPierController extends Controller
             ->update(['order' => mt_rand(1, 100) * -1]);
         $currentDateHours = Carbon::now();
         $pierPorts = $pier->enterPortPiers()->get();
+        if (!$pierPorts) return;
         foreach ($pierPorts as $pierPort) {
             $pierPort->order = --$pierPort->order;
             $pierPort->save();
