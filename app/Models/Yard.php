@@ -73,7 +73,6 @@ class Yard extends Model implements Auditable
             $appropriateYards = $this->getInServiceYards($appropriateYards);
 
 
-
         return self::getYardByPierIdAndMatchYards($appropriateYards->get(), $pierId);
 
     }
