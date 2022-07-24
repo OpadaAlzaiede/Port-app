@@ -47,7 +47,7 @@ class EnterPortRequestController extends Controller
     public function index()
     {
         $enterPortRequests = QueryBuilder::for(PortRequest::class)
-            ->allowedIncludes(['processType', 'payloadType', 'user', 'portRequestItems'])
+            ->allowedIncludes($this->includes)
             ->allowedFilters(['ship_name', 'payload_weight', 'shipping_policy_number', 'status'])
             ->defaultSort('-id')
             ->paginate($this->perPage, ['*'], 'page', $this->page);
@@ -186,16 +186,21 @@ class EnterPortRequestController extends Controller
         $matchPier = Pier::find($this->chooseAvailablePier($enterPortRequest));
         if (!$matchPier)
             return $this->error(301, "couldn't found appropriate pier !");
+
         $matchYard = new Yard();
         $yardResult = $matchYard->getAppropriateYardByPierId($matchPier, $enterPortRequest)->first();
 
         if (!$yardResult)
             return $this->error(301, "couldn't found appropriate yard !");
 
-        $this->attachPortPier($matchPier, $matchYard, $enterPortRequest, $request->validated());
+
+        $this->attachPortPier($matchPier, $yardResult->id, $enterPortRequest, $request->validated());
+
         $this->approveRequest(Auth::user());
 
-        $yard = Yard::find($yardResult);
+
+        $yard = Yard::find($yardResult->id);
+
         $yard->changeCapacity($enterPortRequest);
 
         return $this->resource($enterPortRequest->load([
@@ -290,17 +295,22 @@ class EnterPortRequestController extends Controller
         return $enterPortRequest->pickPier($enterPortRequest);
     }
 
-    private function attachPortPier(Pier $pier, $matchYard, PortRequest $enterPortRequest, $dateDetails)
+    private function attachPortPier(Pier $pier, $matchYardId, PortRequest $enterPortRequest, $dateDetails)
     {
+
         $model = DB::table('enter_port_pier')->where('pier_id', $pier->id)->orderByDesc('order')->first();
+
+
         if (!$pier->enterPortRequests()->exists()) {
+
             $pier->enterPortRequests()->attach($enterPortRequest->id, [
                 'order' => is_null($model) ? 1 : $model->order + 1,
                 'enter_date' => is_null($model) ? Carbon::now() : $model->leave_date,
-                'yard_id', $matchYard
+                'yard_id', $matchYardId
             ]);
             return;
         }
+
         $getLastPierOrder = $pier->enterPortRequests()->latest('id')->first();
 
 
@@ -308,7 +318,7 @@ class EnterPortRequestController extends Controller
             'order' => ++$getLastPierOrder->pivot->order,
             'enter_date' => $getLastPierOrder->pivot->leave_date,
             'leave_date' => $dateDetails['leave_date'],
-            'yard_id' => $matchYard
+            'yard_id' => $matchYardId
         ]);
 
     }
