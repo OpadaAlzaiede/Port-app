@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\constants\DataBaseConstants;
 use App\Http\Requests\GetUserRegisterationNotificationRequest;
 use App\Models\PayloadRequest;
 use App\Models\Pier;
@@ -34,10 +35,17 @@ class AdminController extends Controller
         $processTypes = ProcessType::all();
         $processTypeData = [];
         foreach ($processTypes as $processType) {
-            $payloadRequest = PayloadRequest::query()->where('process_type_id', '=', $processType->id)->whereBetween('date', [$start_date, $end_date])->get();
-            $processTypeData[$processType->name] = $payloadRequest;
-            $enterPortRequest = PortRequest::query()->where('process_type_id', '=', $processType->id)->whereBetween('created_at', [$start_date, $end_date])->get();
-            $processTypeData[$processType->name] = $enterPortRequest;
+            $payloadRequest = PayloadRequest::query()
+                ->where('status', '=', DataBaseConstants::getStatusesArr()['DONE'])
+                ->where('process_type_id', '=', $processType->id)
+                ->whereBetween('date', [$start_date, $end_date])->get();
+            $processTypeData[$processType->name]['payload-request'] = $payloadRequest;
+
+            $enterPortRequest = PortRequest::query()
+                ->where('status', '=', DataBaseConstants::getStatusesArr()['DONE'])
+                ->where('process_type_id', '=', $processType->id)
+                ->whereBetween('created_at', [$start_date, $end_date])->get();
+            $processTypeData[$processType->name]['enter-port-request'] = $enterPortRequest;
         }
         $data['process_types'] = $processTypeData;
         $payloadRequestCount = PayloadRequest::query()->count('id');
@@ -46,8 +54,8 @@ class AdminController extends Controller
         $data['enter_port_request_count'] = $enterPortRequestCount;
         $emptyPiers = Pier::query()->where('status', '=', 1)->count();
         $emptyTugboats = TugBoat::query()->where('status', '=', 1)->count();
-        $data['empty_piers'] = $emptyPiers;
-        $data['empty_tugboats'] = $emptyTugboats;
+        $data['active_piers'] = $emptyPiers;
+        $data['active_tugboats'] = $emptyTugboats;
 
         /**
          *
