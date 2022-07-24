@@ -32,6 +32,7 @@ class EnterPortPierController extends Controller
         $portPiers = QueryBuilder::for(PortPier::class)
             ->allowedIncludes(['PortRequest', 'Pier'])
             ->allowedFilters(['id', 'enter_date', 'leave_date'])
+            ->where('order', '>=', 0)
             ->defaultSort('-id')
             ->paginate($this->perPage, ['*'], 'page', $this->page);
 
