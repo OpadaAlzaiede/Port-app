@@ -32,18 +32,23 @@ class AdminController extends Controller
         $start_date = $request->get('start_Date') ? $request->get('start_date') : PayloadRequest::query()->min('date');
         $end_date = $request->get('end_date') ?: Carbon::now();
         $processTypes = ProcessType::all();
-        $processTypeData = [];
+        $processDataDetails = [];
         foreach ($processTypes as $processType) {
-            $payloadRequest = PayloadRequest::query()->where('process_type_id', '=', $processType->id)->whereBetween('date', [$start_date, $end_date])->get();
-            $processTypeData[$processType->name] = $payloadRequest;
-            $enterPortRequest = PortRequest::query()->where('process_type_id', '=', $processType->id)->whereBetween('created_at', [$start_date, $end_date])->get();
-            $processTypeData[$processType->name] = $enterPortRequest;
+            $processData = [];
+            $processData["name"] = $processType->name;
+            $payloadRequestsCount = PayloadRequest::query()->where('process_type_id', '=', $processType->id)->whereBetween('date', [$start_date, $end_date])->count();
+            $processData["payload_requests_count"] = $payloadRequestsCount;
+            $enterPortRequestsCount = PortRequest::query()->where('process_type_id', '=', $processType->id)->whereBetween('created_at', [$start_date, $end_date])->count();
+            $processData["enter_port_requests_count"] = $enterPortRequestsCount;
+            $totalWeight = PortRequest::query()->where('process_type_id', '=', $processType->id)->whereBetween('created_at', [$start_date, $end_date])->sum("payload_weight");
+            $processData["total_weight"] = $totalWeight;
+            array_push($processDataDetails, $processData);
         }
-        $data['process_types'] = $processTypeData;
+        $data["process_types"] = $processDataDetails;
         $payloadRequestCount = PayloadRequest::query()->count('id');
         $enterPortRequestCount = PortRequest::query()->count('id');
-        $data['payload_request_count'] = $payloadRequestCount;
-        $data['enter_port_request_count'] = $enterPortRequestCount;
+        //$data['payload_request_count'] = $payloadRequestCount;
+        //$data['enter_port_request_count'] = $enterPortRequestCount;
         $emptyPiers = Pier::query()->where('status', '=', 1)->count();
         $emptyTugboats = TugBoat::query()->where('status', '=', 1)->count();
         $data['empty_piers'] = $emptyPiers;
@@ -57,9 +62,9 @@ class AdminController extends Controller
         foreach ($piers as $pier) {
             $pierDetails = array();
             $countOfServedShips = $pier->enterPortPiers()->where('order', '<', 0)->get()->count();
-            $countOfUnServedShips = $pier->enterPortPiers()->where('order', '>', 0)->get()->count();
+            //$countOfUnServedShips = $pier->enterPortPiers()->where('order', '>', 0)->get()->count();
             $pierDetails['number_of_served_ship'] = $countOfServedShips;
-            $pierDetails['number_of_un_served_ship'] = $countOfUnServedShips;
+            //$pierDetails['number_of_un_served_ship'] = $countOfUnServedShips;
             $enterPortPiers = $pier->enterPortPiers()->get();
             $countOfLoading = 0;
             $countOfUnLoading = 0;
