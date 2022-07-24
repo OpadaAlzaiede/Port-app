@@ -187,7 +187,7 @@ class EnterPortRequestController extends Controller
         $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
 
         $matchPier = Pier::find($this->chooseAvailablePier($enterPortRequest));
-        
+
         if (!$matchPier)
             return $this->error(301, "couldn't found appropriate pier !");
 
@@ -317,12 +317,12 @@ class EnterPortRequestController extends Controller
         }
 
         $getLastPierOrder = $pier->enterPortRequests()->latest('id')->first();
-
+        $leaveDate = new Carbon($getLastPierOrder->pivot->leave_date);
 
         $pier->enterPortRequests()->attach($enterPortRequest->id, [
             'order' => ++$getLastPierOrder->pivot->order,
             'enter_date' => $getLastPierOrder->pivot->leave_date,
-            'leave_date' => $dateDetails['leave_date'],
+            'leave_date' => $leaveDate->addHours($dateDetails['leave_date']),
             'yard_id' => $matchYardId
         ]);
 

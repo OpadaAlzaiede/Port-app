@@ -27,7 +27,7 @@ class ApproveEnterPortRequest extends FormRequest
     public function rules()
     {
         return [
-            'leave_date' => 'required|date'
+            'leave_date' => 'required|integer'
         ];
     }
 }
