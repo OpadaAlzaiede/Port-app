@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\constants\DataBaseConstants;
 use App\Http\Requests\GetUserRegisterationNotificationRequest;
 use App\Models\PayloadRequest;
 use App\Models\Pier;
@@ -51,8 +52,8 @@ class AdminController extends Controller
         //$data['enter_port_request_count'] = $enterPortRequestCount;
         $emptyPiers = Pier::query()->where('status', '=', 1)->count();
         $emptyTugboats = TugBoat::query()->where('status', '=', 1)->count();
-        $data['empty_piers'] = $emptyPiers;
-        $data['empty_tugboats'] = $emptyTugboats;
+        $data['active_piers'] = $emptyPiers;
+        $data['active_tugboats'] = $emptyTugboats;
 
         /**
          *

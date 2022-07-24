@@ -79,8 +79,8 @@ class DatabaseSeeder extends Seeder
                 'shipping_policy_number' => 'test' . $i * 10,
                 'status' => mt_rand(1, 3),
                 'way' => mt_rand(1, 3),
-                'process_type_id' => mt_rand(1, 5),
-                'payload_type_id' => mt_rand(1, 5),
+                'process_type_id' => mt_rand(1, 2),
+                'payload_type_id' => mt_rand(1, 4),
                 'user_id' => mt_rand(1, 5),
             ]);
 
@@ -103,8 +103,8 @@ class DatabaseSeeder extends Seeder
                 'ship_weight' => mt_rand(10, 20000),
                 'shipping_policy_number' => 'test' . $i * 10,
                 'status' => mt_rand(1, 3),
-                'process_type_id' => mt_rand(1, 5),
-                'payload_type_id' => mt_rand(1, 5),
+                'process_type_id' => mt_rand(1, 2),
+                'payload_type_id' => mt_rand(1, 4),
                 'user_id' => mt_rand(1, 5),
             ]);
 
@@ -115,8 +115,8 @@ class DatabaseSeeder extends Seeder
                 'status' => mt_rand(1, 2),
                 'way' => mt_rand(1, 2),
                 'date' => '2022-04-21 12:0:0',
-                'payload_type_id' => mt_rand(1, 5),
-                'process_type_id' => mt_rand(1, 5),
+                'payload_type_id' => mt_rand(1, 4),
+                'process_type_id' => mt_rand(1, 2),
                 'user_id' => mt_rand(1, 5),
             ]);
 
