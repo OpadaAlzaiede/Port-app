@@ -187,6 +187,7 @@ class EnterPortRequestController extends Controller
         $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
 
         $matchPier = Pier::find($this->chooseAvailablePier($enterPortRequest));
+        
         if (!$matchPier)
             return $this->error(301, "couldn't found appropriate pier !");
 
@@ -203,6 +204,7 @@ class EnterPortRequestController extends Controller
 
 
         $yard = Yard::find($yardResult->id);
+
 
         $yard->changeCapacity($enterPortRequest);
 

@@ -50,9 +50,50 @@ class DatabaseSeeder extends Seeder
         User::factory()->create(['username' => 'admin'])->assignRole($adminRole);
         Pier::factory(5)->create();
 
+
+        for ($i = 0; $i < 10; $i++) {
+            PortRequest::create([
+                'ship_name' => 'test' . $i,
+                'ship_length' => mt_rand(10, 20000),
+                'ship_draft_length' => mt_rand(10, 20000),
+                'payload_weight' => mt_rand(10, 20000),
+                'ship_weight' => mt_rand(10, 20000),
+                'shipping_policy_number' => 'test' . $i * 10,
+                'status' => mt_rand(1, 3),
+                'process_type_id' => mt_rand(1, 5),
+                'payload_type_id' => mt_rand(1, 5),
+                'user_id' => mt_rand(1, 5),
+            ]);
+
+            PayloadRequest::create([
+                'amount' => mt_rand(10, 20000),
+                'shipping_policy_number' => 'test' . $i * 10,
+                'ship_number' => 'test_test_test_test',
+                'status' => mt_rand(1, 2),
+                'way' => mt_rand(1, 2),
+                'date' => '2022-04-21 12:0:0',
+                'payload_type_id' => mt_rand(1, 5),
+                'process_type_id' => mt_rand(1, 5),
+                'user_id' => mt_rand(1, 5),
+            ]);
+
+            Yard::create([
+                'size' => mt_rand(1, 3000),
+                'payload_type_id' => rand(1, 4),
+                'name' => rand(1, 4),
+                'code' => rand(1, 4),
+                'capacity' => rand(1, 4),
+            ]);
+        }
+
+
         $piers = Pier::all();
         $i = 1;
         foreach ($piers as $pier) {
+            $yards =Yard::all();
+            foreach ($yards as $yard)
+                $pier->yards()->attach($yard['id'],['distance' => rand(1,50)]);
+
             DB::table('enter_port_pier')->insert([ 'order' => 1,
                 'enter_date' => Carbon::now(),
                 'leave_date' => Carbon::now()->addDays(1),
@@ -94,50 +135,7 @@ class DatabaseSeeder extends Seeder
             ProcessType::create(['name' => $type]);
         }
 
-        for ($i = 0; $i < 10; $i++) {
-            PortRequest::create([
-                'ship_name' => 'test' . $i,
-                'ship_length' => mt_rand(10, 20000),
-                'ship_draft_length' => mt_rand(10, 20000),
-                'payload_weight' => mt_rand(10, 20000),
-                'ship_weight' => mt_rand(10, 20000),
-                'shipping_policy_number' => 'test' . $i * 10,
-                'status' => mt_rand(1, 3),
-                'process_type_id' => mt_rand(1, 5),
-                'payload_type_id' => mt_rand(1, 5),
-                'user_id' => mt_rand(1, 5),
-            ]);
 
-            PayloadRequest::create([
-                'amount' => mt_rand(10, 20000),
-                'shipping_policy_number' => 'test' . $i * 10,
-                'ship_number' => 'test_test_test_test',
-                'status' => mt_rand(1, 2),
-                'way' => mt_rand(1, 2),
-                'date' => '2022-04-21 12:0:0',
-                'payload_type_id' => mt_rand(1, 5),
-                'process_type_id' => mt_rand(1, 5),
-                'user_id' => mt_rand(1, 5),
-            ]);
-
-            // Pier::create([
-            //     'name' => ucwords($this->faker->name()) . rand(20,100),
-            //     'length' => mt_rand(1, 200),
-            //     'draft' => mt_rand(1, 200),
-            //     'code' => 'test' . $i . '*' . $i,
-            //     'type' => rand(1, 2),
-            //     'payload_type_id' => rand(1, 4),
-            //     'status' => rand(1, 2),
-            // ]);
-
-            Yard::create([
-                'size' => mt_rand(1, 3000),
-                'payload_type_id' => rand(1, 4),
-                'name' => rand(1, 4),
-                'code' => rand(1, 4),
-                'capacity' => rand(1, 4),
-            ]);
-        }
     }
 }
 }
