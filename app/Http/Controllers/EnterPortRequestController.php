@@ -185,24 +185,24 @@ class EnterPortRequestController extends Controller
             return $this->error(401, Config::get('constants.errors.unauthorized'));
 
         $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
-
         $matchPier = Pier::find($this->chooseAvailablePier($enterPortRequest));
+
         if (!$matchPier)
             return $this->error(301, "couldn't found appropriate pier !");
 
         $matchYard = new Yard();
+
         $yardResult = $matchYard->getAppropriateYardByPierId($matchPier, $enterPortRequest)->first();
 
         if (!$yardResult)
             return $this->error(301, "couldn't found appropriate yard !");
 
-
-        $this->attachPortPier($matchPier, $yardResult->id, $enterPortRequest, $request->validated());
+        $this->attachPortPier($matchPier, $yardResult->yard_id, $enterPortRequest, $request->validated());
 
         $this->approveRequest(Auth::user());
 
 
-        $yard = Yard::find($yardResult->id);
+        $yard = Yard::find($yardResult->yard_id);
 
         $yard->changeCapacity($enterPortRequest);
 
@@ -315,15 +315,14 @@ class EnterPortRequestController extends Controller
         }
 
         $getLastPierOrder = $pier->enterPortRequests()->latest('id')->first();
-
+        $leaveDate = new Carbon($getLastPierOrder->pivot->leave_date);
 
         $pier->enterPortRequests()->attach($enterPortRequest->id, [
             'order' => ++$getLastPierOrder->pivot->order,
             'enter_date' => $getLastPierOrder->pivot->leave_date,
-            'leave_date' => $dateDetails['leave_date'],
+            'leave_date' => $leaveDate->addHours($dateDetails['leave_date']),
             'yard_id' => $matchYardId
         ]);
-
     }
 
     public function getPending()

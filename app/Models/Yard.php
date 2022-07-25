@@ -31,7 +31,7 @@ class Yard extends Model implements Auditable
 
     public static function getYardByPierIdAndMatchYards($matchYards, $pierId)
     {
-        return DB::table('pier_yard')->where('pier_id', $pierId->id)->whereIn('yard_id', $matchYards)
+        return DB::table('pier_yard')->where('pier_id', $pierId->id)->whereIn('yard_id', $matchYards->pluck('id'))
             ->orderBy('distance', 'asc')->get();
     }
 
@@ -55,8 +55,6 @@ class Yard extends Model implements Auditable
 
             return;
         });
-
-
     }
 
     public function getAppropriateYardByPierId($pierId, PortRequest $enterPortRequest)
@@ -64,18 +62,13 @@ class Yard extends Model implements Auditable
         $amount = $enterPortRequest->portRequestItems()->sum('amount');
         $appropriateYards = self::getYardByPayloadTypeId($enterPortRequest->payload_type_id);
 
-        if ($enterPortRequest->process_type_id == 2){
+        if ($enterPortRequest->process_type_id == 2) {
 
             $appropriateYards = $this->scopeYardByCapacity($appropriateYards, $amount);
-
-        }
-        else
+        } else
             $appropriateYards = $this->getInServiceYards($appropriateYards);
 
-
-
         return self::getYardByPierIdAndMatchYards($appropriateYards->get(), $pierId);
-
     }
 
     public function changeCapacity(PortRequest $enterPortRequest)
@@ -87,7 +80,6 @@ class Yard extends Model implements Auditable
         }
         $this->current_capacity = $this->current_capacity - $amount;
         return $this->save();
-
     }
 
     public static function boot()

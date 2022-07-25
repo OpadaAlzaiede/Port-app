@@ -27,6 +27,10 @@ class PortRequest extends Model implements Auditable
     {
         return $this->belongsTo(PayloadType::class, 'payload_type_id', 'id');
     }
+    public function portPier()
+    {
+        return $this->belongsToMany(PortRequest::class, 'enter_port_pier', 'enter_port_request_id', 'pier_id')->withPivot(['order', 'leave_date', 'enter_date']);
+    }
 
     public function user()
     {
