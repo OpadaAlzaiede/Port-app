@@ -60,8 +60,10 @@ class AdminController extends Controller
          */
         $piers = Pier::all();
         $piersArray = array();
+        $pierDataDetails = [];
         foreach ($piers as $pier) {
-            $pierDetails = array();
+            $pierData = [];
+            $pierData["name"] = $pier->name;
             $countOfServedShips = $pier->enterPortPiers()->where('order', '<', 0)->get()->count();
             //$countOfUnServedShips = $pier->enterPortPiers()->where('order', '>', 0)->get()->count();
             $pierDetails['number_of_served_ship'] = $countOfServedShips;
@@ -81,12 +83,12 @@ class AdminController extends Controller
                     ++$countOfUnLoadingAndLoading;
                 }
             }
-            $pierDetails['number_of_loading_operation'] = $countOfLoading;
-            $pierDetails['number_of_un_loading_operation'] = $countOfUnLoading;
-            $pierDetails['number_of_loading_and_unloading_operation'] = $countOfUnLoadingAndLoading;
-            $piersArray[$pier->name] = $pierDetails;
+            $pierData['number_of_loading_operation'] = $countOfLoading;
+            $pierData['number_of_un_loading_operation'] = $countOfUnLoading;
+            $pierData['number_of_loading_and_unloading_operation'] = $countOfUnLoadingAndLoading;
+            array_push($pierDataDetails, $pierData);
         }
-        $data ['piers'] = $piersArray;
+        $data ['piers'] = $pierDataDetails;
         return $data;
     }
 }
