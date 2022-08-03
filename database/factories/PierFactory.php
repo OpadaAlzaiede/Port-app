@@ -21,7 +21,7 @@ class PierFactory extends Factory
                 'code' => $this->faker->countryCode(). '-'.rand(10,100),
                 'type' => rand(1, 2),
                 'payload_type_id' => rand(1, 4),
-                'status' => rand(1, 2),
+                'status' =>1,
         ];
     }
 }

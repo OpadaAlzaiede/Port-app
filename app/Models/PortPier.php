@@ -20,4 +20,9 @@ class PortPier extends Model
     {
         return $this->belongsTo(Pier::class, 'pier_id', 'id');
     }
+
+    public function yard()
+    {
+        return $this->belongsTo(Yard::class, 'yard_id', 'id');
+    }
 }

@@ -13,6 +13,7 @@ use App\Models\PortRequest;
 use App\Models\PortRequestItem;
 use App\Models\Rejection;
 use App\Models\User;
+use App\Models\Yard;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,6 +26,10 @@ use Spatie\QueryBuilder\QueryBuilder;
 class EnterPortRequestController extends Controller
 {
     use \App\Traits\Request;
+
+    private $includes = ['processType', 'payloadType', 'user', 'portRequestItems'];
+    private $filters = ['id'];
+
 
     /**
      * EnterPortRequestController constructor.
@@ -42,7 +47,7 @@ class EnterPortRequestController extends Controller
     public function index()
     {
         $enterPortRequests = QueryBuilder::for(PortRequest::class)
-            ->allowedIncludes(['processType', 'payloadType', 'user', 'portRequestItems'])
+            ->allowedIncludes($this->includes)
             ->allowedFilters(['ship_name', 'payload_weight', 'shipping_policy_number', 'status'])
             ->defaultSort('-id')
             ->paginate($this->perPage, ['*'], 'page', $this->page);
@@ -110,6 +115,7 @@ class EnterPortRequestController extends Controller
     public function update(UpdateEnterPortRequestRequest $request, $id)
     {
         $enterPortRequest = PortRequest::find($id);
+        $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
         if (!$enterPortRequest) {
             $this->error('401', 'NOT FOUND');
         }
@@ -127,6 +133,8 @@ class EnterPortRequestController extends Controller
                 ]);
             }
         }
+        $officer = User::getUserByRoleName(Config::get('constants.roles.pier_officer_role'));
+        $this->reProcessRequest(Auth::user(), $officer, $request->validated());
         $enterPortRequest->update($request->validated());
         return $this->resource($enterPortRequest->load([
             'processType',
@@ -177,10 +185,26 @@ class EnterPortRequestController extends Controller
             return $this->error(401, Config::get('constants.errors.unauthorized'));
 
         $this->setRequest(PortRequest::class, $enterPortRequest, Rejection::class);
-
         $matchPier = Pier::find($this->chooseAvailablePier($enterPortRequest));
-        $this->attachPortPier($matchPier, $enterPortRequest, $request->validated());
+
+        if (!$matchPier)
+            return $this->error(301, "couldn't found appropriate pier !");
+
+        $matchYard = new Yard();
+
+        $yardResult = $matchYard->getAppropriateYardByPierId($matchPier, $enterPortRequest)->first();
+
+        if (!$yardResult)
+            return $this->error(301, "couldn't found appropriate yard !");
+
+        $this->attachPortPier($matchPier, $yardResult->yard_id, $enterPortRequest, $request->validated());
+
         $this->approveRequest(Auth::user());
+
+
+        $yard = Yard::find($yardResult->yard_id);
+
+        $yard->changeCapacity($enterPortRequest);
 
         return $this->resource($enterPortRequest->load([
             'processType',
@@ -274,24 +298,62 @@ class EnterPortRequestController extends Controller
         return $enterPortRequest->pickPier($enterPortRequest);
     }
 
-    private function attachPortPier(Pier $pier, PortRequest $enterPortRequest, $dateDetails)
+    private function attachPortPier(Pier $pier, $matchYardId, PortRequest $enterPortRequest, $dateDetails)
     {
+
         $model = DB::table('enter_port_pier')->where('pier_id', $pier->id)->orderByDesc('order')->first();
+
+
         if (!$pier->enterPortRequests()->exists()) {
+
             $pier->enterPortRequests()->attach($enterPortRequest->id, [
                 'order' => is_null($model) ? 1 : $model->order + 1,
                 'enter_date' => is_null($model) ? Carbon::now() : $model->leave_date,
+                'yard_id', $matchYardId
             ]);
             return;
         }
 
         $getLastPierOrder = $pier->enterPortRequests()->latest('id')->first();
+        $leaveDate = new Carbon($getLastPierOrder->pivot->leave_date);
 
         $pier->enterPortRequests()->attach($enterPortRequest->id, [
-            'order' => ++$getLastPierOrder->order,
-            'enter_date' => $dateDetails['enter_date'],
-            'leave_date' => $dateDetails['leave_date'],
+            'order' => ++$getLastPierOrder->pivot->order,
+            'enter_date' => $getLastPierOrder->pivot->leave_date,
+            'leave_date' => $leaveDate->addHours($dateDetails['leave_date']),
+            'yard_id' => $matchYardId
         ]);
+    }
 
+    public function getPending()
+    {
+
+        $pending = $this->scopeRequests(DataBaseConstants::getStatusesArr()['IN_PROGRESS'], 0);
+        $this->flushNotifications($pending, 0);
+        return $this->collection($pending);
+    }
+
+    public function getInProgress()
+    {
+
+        $inProgress = $this->scopeRequests(DataBaseConstants::getStatusesArr()['IN_PROGRESS'], 1);
+        $this->flushNotifications($inProgress, 1);
+        return $this->collection($inProgress);
+    }
+
+    public function getDone()
+    {
+
+        $done = $this->scopeRequests(DataBaseConstants::getStatusesArr()['DONE'], 1);
+        $this->flushNotifications($done, 2);
+        return $this->collection($done);
+    }
+
+    public function getCanceled()
+    {
+
+        $canceled = $this->scopeRequests(DataBaseConstants::getStatusesArr()['CANCELED'], 1);
+        $this->flushNotifications($canceled, 3);
+        return $this->collection($canceled);
     }
 }

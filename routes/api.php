@@ -33,7 +33,6 @@ Route::post('reset-password', [UserController::class, 'resetPassword']);
 Route::get('/roles', [RoleController::class, 'getRoles']);
 
 
-
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
 
@@ -66,36 +65,44 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Officer Only Routes
 
-    Route::middleware('role:'. Config::get('constants.roles.yard_officer_role'))->group(function() {
-        Route::resource('/yards', YardController::class);
+    Route::middleware('role:' . Config::get('constants.roles.yard_officer_role'))->group(function () {
+        Route::resource('/yards', YardController::class)->only(['store', 'update', 'destroy']);
     });
-    Route::middleware('role:'. Config::get('constants.roles.tugboat_officer_role'))->group(function() {
-        Route::resource('/tugboats', TugboatController::class);
+    
+    Route::post('/yard/distance-from-piers', [YardController::class, 'addDistanceBetweenYardsAndPier']);
+    Route::middleware('role:' . Config::get('constants.roles.tugboat_officer_role'))->group(function () {
+        Route::resource('/tugboats', TugboatController::class)->only(['store', 'update', 'destroy']);
     });
 
     Route::middleware('role:' . Config::get('constants.roles.pier_officer_role'))->group(function () {
-        Route::resource('/piers', PierController::class);
+        Route::resource('/piers', PierController::class)->only(['store', 'update', 'destroy']);
         Route::post('/pier/distance-from-yards', [PierController::class, 'addDistanceBetweenPierAndYards']);
         Route::resource('/process-types', ProcessTypeController::class)->except(['index', 'show']);
         Route::resource('/payload-types', PayloadTypeController::class)->except(['index', 'show']);
         Route::resource('/pier-yard', PierYardController::class)->except(['store', 'show']);
     });
+    Route::resource('/yards', YardController::class)->only(['index', 'show']);
+    Route::resource('/tugboats', TugboatController::class)->only(['index', 'show']);
+    Route::resource('/piers', PierController::class)->only(['index', 'show']);
+
+
+
 
     // Admin only Routes
     Route::middleware('role:' . Config::get('constants.roles.admin_role') . '|'
-                              . Config::get('constants.roles.pier_officer_role')
-                              . '|' . Config::get('constants.roles.tugboat_officer_role')
-                              . '|' . Config::get('constants.roles.yard_officer_role'))
+        . Config::get('constants.roles.pier_officer_role')
+        . '|' . Config::get('constants.roles.tugboat_officer_role')
+        . '|' . Config::get('constants.roles.yard_officer_role'))
         ->group(function () {
             Route::prefix('/admin')->group(function () {
                 Route::get('/notifications', [AdminController::class, 'getNotifications']);
                 Route::get('/get-stochastic', [AdminController::class, 'getStochastic']);
                 Route::get('/get-audits', [AuditController::class, 'getAudits']);
             });
-    });
+        });
 
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::resource('/enter-port-requests', EnterPortRequestController::class);
+//    Route::resource('/enter-port-requests', EnterPortRequestController::class);
 });

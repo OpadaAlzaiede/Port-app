@@ -19,8 +19,9 @@ class CreateYardsTable extends Migration
             $table->string('code');
             $table->string('size');
             $table->unsignedBigInteger('capacity');
+            $table->unsignedBigInteger('current_capacity')->default(0);
             $table->unsignedBigInteger('payload_type_id');
-            $table->tinyInteger('status'); //  0 => outOfService ; 1 otherwise
+            $table->tinyInteger('status')->default(1); //  0 => outOfService ; 1 otherwise
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });

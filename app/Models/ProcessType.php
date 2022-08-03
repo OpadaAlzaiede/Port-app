@@ -14,8 +14,7 @@ class ProcessType extends Model implements Auditable
 
     protected const TYPES = [
         1 => 'LOADING',
-        2 => 'UNLOADING',
-        3 => 'LOADING & UNLOADING',
+        2 => 'UNLOADING'
     ];
 
     protected $table = 'process_types';

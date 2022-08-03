@@ -22,8 +22,9 @@ class YardResource extends JsonResource
             'code' => $this->code,
             'size' => $this->size,
             'payload_type' => $this->payloadType,
-            'pier' => $this->whenLoaded('piers'),
+            'piers' => $this->piers,
             'capacity' => $this->capacity,
+            'current_capacity' => $this->current_capacity,
             'status' => $this->status
         ];
     }

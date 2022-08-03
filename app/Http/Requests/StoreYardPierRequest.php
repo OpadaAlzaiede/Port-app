@@ -4,9 +4,11 @@ namespace App\Http\Requests;
 
 use App\Traits\JsonErrors;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class ApproveEnterPortRequest extends FormRequest
+class StoreYardPierRequest extends FormRequest
 {
+
     use JsonErrors;
 
     /**
@@ -26,8 +28,12 @@ class ApproveEnterPortRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'leave_date' => 'required|integer'
-        ];
+        return
+            [
+                'yard_id' => ['required', 'integer', Rule::exists('yards', 'id')],
+                'piers' => ['required', 'array'],
+                'piers.*.id' => ['required', 'integer', Rule::exists('piers', 'id')],
+                'piers.*.distance' => ['required', 'numeric']
+            ];
     }
 }
