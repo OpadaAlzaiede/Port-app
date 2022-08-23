@@ -39,10 +39,10 @@ class PayloadRequestController extends Controller
     {
 
         $payloadRequests = QueryBuilder::for(PayloadRequest::class)
-                                       ->allowedIncludes($this->includes)
-                                       ->allowedFilters(['id', AllowedFilter::exact('shipping_policy_number')])
-                                       ->defaultSort('-id')
-                                       ->paginate($this->perPage, ['*'], 'page', $this->page);
+                                    ->allowedIncludes($this->includes)
+                                    ->allowedFilters(['id', 'status', AllowedFilter::exact('shipping_policy_number')])
+                                    ->defaultSort('-id')
+                                    ->paginate($this->perPage, ['*'], 'page', $this->page);
 
         return $this->collection($payloadRequests);
     }
